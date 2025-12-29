@@ -3,6 +3,9 @@
 [![npm version](https://badge.fury.io/js/novel-writer-skills.svg)](https://www.npmjs.com/package/novel-writer-skills)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+> [!NOTE]
+> Read this document in **[English](README.en.md)**.
+
 > 🚀 专为 Claude Code 设计的 AI 智能小说创作助手
 >
 > 深度集成 Slash Commands 和 Agent Skills，提供最佳创作体验
