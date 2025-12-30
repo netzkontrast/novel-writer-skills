@@ -1,6 +1,6 @@
 ---
 name: timeline
-description: 管理和验证故事时间线
+description: Manage and verify story timeline
 argument-hint: [add | check | show | sync]
 allowed-tools: Read(//spec/tracking/timeline.json), Read(spec/tracking/timeline.json), Write(//spec/tracking/timeline.json), Write(spec/tracking/timeline.json), Read(//stories/**/content/**), Read(stories/**/content/**), Bash(find:*), Bash(*)
 model: claude-sonnet-4-5-20250929
@@ -9,46 +9,46 @@ scripts:
   ps: .specify/scripts/powershell/check-timeline.ps1
 ---
 
-# 时间线管理
+# Timeline Management
 
-维护故事的时间轴，确保时间逻辑的一致性。
+Maintain the story timeline, ensuring temporal logic consistency.
 
-## 功能
+## Features
 
-1. **时间记录** - 追踪每个章节的时间点
-2. **并行事件** - 管理同时发生的多线剧情
-3. **历史对照** - 与真实历史事件对比（历史小说）
-4. **逻辑验证** - 检查时间跨度的合理性
+1. **Time Tracking** - Track time points for each chapter
+2. **Parallel Events** - Manage multi-thread plots happening simultaneously
+3. **Historical Comparison** - Compare with real historical events (for historical novels)
+4. **Logic Verification** - Check reasonableness of time spans
 
-## 使用方法
+## Usage
 
-执行脚本 {SCRIPT}，支持以下操作：
-- `add` - 添加时间节点
-- `check` - 验证时间连续性
-- `show` - 显示时间线概览
-- `sync` - 同步并行事件
+Execute script {SCRIPT}, supporting the following operations:
+- `add` - Add time node
+- `check` - Verify time continuity
+- `show` - Show timeline overview
+- `sync` - Sync parallel events
 
-## 时间线数据
+## Timeline Data
 
-时间线信息存储在 `spec/tracking/timeline.json` 中：
-- 故事内时间（年/月/日）
-- 章节对应关系
-- 重要事件标记
-- 时间跨度计算
+Timeline information is stored in `spec/tracking/timeline.json`:
+- In-story time (Year/Month/Day)
+- Chapter correspondence
+- Key event markers
+- Time span calculation
 
-## 示例输出
+## Output Example
 
 ```
-📅 故事时间线
+📅 Story Timeline
 ━━━━━━━━━━━━━━━━━━━━
-当前时间：万历三十年春
+Current Time: Spring of 30th Year of Wanli
 
-第1章  | 万历二十九年冬月 | 穿越事件
-第4章  | 万历三十年正月   | 北上赴考
-第6章  | 万历三十年二月   | 会试
-第8章  | 万历三十年三月   | 殿试
-第61章 | 万历三十年四月   | [待写]
+Chapter 1  | Winter of 29th Year of Wanli | Time Travel Event
+Chapter 4  | 1st Month of 30th Year of Wanli | Go North for Exam
+Chapter 6  | 2nd Month of 30th Year of Wanli | Metropolitan Exam
+Chapter 8  | 3rd Month of 30th Year of Wanli | Palace Exam
+Chapter 61 | 4th Month of 30th Year of Wanli | [To be written]
 
-⏱️ 时间跨度：5个月
-🔄 并行事件：日本入侵朝鲜
+⏱️ Time Span: 5 months
+🔄 Parallel Event: Japanese Invasion of Korea
 ```

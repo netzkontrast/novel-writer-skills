@@ -1,6 +1,6 @@
 ---
-description: 定义故事规格，明确要创造什么样的作品
-argument-hint: [故事描述]
+description: Define story specifications, clarifying what to create
+argument-hint: [story description]
 allowed-tools: Read(//stories/**/specification.md), Read(stories/**/specification.md), Write(//stories/**/specification.md), Write(stories/**/specification.md), Read(//memory/constitution.md), Read(memory/constitution.md), Bash(find:*), Bash(*)
 model: claude-sonnet-4-5-20250929
 scripts:
@@ -8,655 +8,655 @@ scripts:
   ps: .specify/scripts/powershell/specify-story.ps1 -Json
 ---
 
-用户输入：$ARGUMENTS
+User Input: $ARGUMENTS
 
-## 目标
+## Goal
 
-像产品规格书（PRD）一样定义故事，明确"要创造什么"而非"如何创造"。支持**渐进式规格定义**，从一句话到完整规格，循序渐进。输出带有 `[需要澄清]` 标记的规格，为后续澄清步骤留出空间。
+Define the story like a Product Requirement Document (PRD), clarifying "What to create" rather than "How to create". Supports **Progressive Specification Definition**, from a single sentence to a full specification, step by step. Outputs specifications with `[Needs Clarification]` markers to leave room for subsequent clarification steps.
 
-## 渐进式规格层级
+## Progressive Specification Levels
 
-根据用户输入的详细程度，自动判断并生成相应层级的规格：
+Automatically judge and generate corresponding level specifications based on user input detail:
 
-**Level 1 - 一句话故事（Logline）**：
-- 30字以内的核心创意
-- 示例："一个失忆的黑客发现自己活在虚拟世界中"
-- 适用：初期灵感阶段
+**Level 1 - Logline**:
+- Core idea within 30 words
+- Example: "An amnesiac hacker discovers he lives in a virtual world"
+- Applicable: Initial inspiration stage
 
-**Level 2 - 一段话概要（Premise）**：
-- 100-200字的故事梗概
-- 包含：主角、冲突、目标、障碍
-- 适用：创意验证阶段
+**Level 2 - Premise**:
+- Story summary of 100-200 words
+- Includes: Protagonist, Conflict, Goal, Obstacle
+- Applicable: Idea validation stage
 
-**Level 3 - 一页纸大纲（One-Page Spec）**：
-- 包含：概要、主角、主要冲突、三幕结构
-- 简化版规格（约500字）
-- 适用：快速原型阶段
+**Level 3 - One-Page Spec**:
+- Includes: Summary, Protagonist, Main Conflict, Three-Act Structure
+- Simplified spec (about 500 words)
+- Applicable: Rapid prototyping stage
 
-**Level 4 - 完整规格（Full Specification）**：
-- 包含完整九章规格内容
-- 详细的线索管理、成功标准等
-- 适用：正式创作准备阶段
+**Level 4 - Full Specification**:
+- Includes complete nine-chapter specification content
+- Detailed clue management, success criteria, etc.
+- Applicable: Formal creation preparation stage
 
-## 执行步骤
+## Execution Steps
 
-### 0. 判断规格层级
+### 0. Judge Specification Level
 
-**根据用户输入自动判断层级**：
+**Automatically judge level based on user input**:
 
 ```python
 input_length = len($ARGUMENTS)
 existing_spec = check_if_exists()
 
 if existing_spec:
-    # 已有规格，执行升级或修改
+    # Existing spec, execute upgrade or modify
     level = get_current_level(existing_spec)
     action = "upgrade" or "modify"
 elif input_length < 50:
-    # 一句话输入 → Level 1
+    # One sentence input → Level 1
     target_level = 1
 elif input_length < 300:
-    # 一段话输入 → Level 2
+    # One paragraph input → Level 2
     target_level = 2
 elif input_length < 1000:
-    # 简要描述 → Level 3
+    # Brief description → Level 3
     target_level = 3
 else:
-    # 详细描述 → Level 4
+    # Detailed description → Level 4
     target_level = 4
 ```
 
-**决策逻辑**：
-- 如果已存在规格文件，询问用户是"升级层级"还是"修改内容"
-- 如果是新故事，根据输入长度自动选择层级
-- 生成规格后，提示用户如何扩展到下一层级
+**Decision Logic**:
+- If specification file exists, ask user whether to "Upgrade Level" or "Modify Content"
+- If new story, automatically select level based on input length
+- After generating specification, prompt user how to expand to next level
 
-### 1. 初始化故事规格
+### 1. Initialize Story Specification
 
-运行 `{SCRIPT}` 获取路径信息：
-- 解析 JSON 获取 `STORY_NAME` 和 `SPEC_PATH`
-- 如果是新故事，创建规格文件
-- 如果已存在，准备更新或升级
+Run `{SCRIPT}` to get path info:
+- Parse JSON to get `STORY_NAME` and `SPEC_PATH`
+- If new story, create specification file
+- If exists, prepare to update or upgrade
 
-### 2. 检查宪法合规性
+### 2. Check Constitution Compliance
 
-如果存在 `memory/constitution.md`：
-- 加载宪法原则
-- 确保规格符合宪法价值观
-- 在规格中引用相关原则
+If `memory/constitution.md` exists:
+- Load constitution principles
+- Ensure specification complies with constitution values
+- Reference relevant principles in specification
 
-### 3. 创建故事规格文档
+### 3. Create Story Specification Document
 
-**根据判断的层级生成相应规格**：
+**Generate corresponding specification based on judged level**:
 
 ---
 
-#### Level 1 规格模板（一句话故事）
+#### Level 1 Specification Template (Logline)
 
 ```markdown
-# 故事规格书
+# Story Specification
 
-## 元数据
-- 故事名称：[名称]
-- 版本：1.0.0-L1（一句话）
-- 创建日期：[YYYY-MM-DD]
-- 当前层级：Level 1
-- 作者：[作者名]
+## Metadata
+- Story Name: [Name]
+- Version: 1.0.0-L1 (Logline)
+- Creation Date: [YYYY-MM-DD]
+- Current Level: Level 1
+- Author: [Author Name]
 
-## 一句话故事（Logline）
+## Logline
 
-[30字以内的核心创意]
+[Core idea within 30 words]
 
-**示例**：
-- "一个失忆的黑客发现自己活在虚拟世界中"
-- "普通高中生获得预知未来的能力，但每次使用都会缩短寿命"
-- "退役特工为了救女儿，必须完成一次不可能的任务"
+**Examples**:
+- "An amnesiac hacker discovers he lives in a virtual world"
+- "A high school student gains the ability to predict the future, but each use shortens his life"
+- "A retired agent must complete an impossible mission to save his daughter"
 
-## 核心元素识别
+## Core Element Identification
 
-基于这句话，识别以下核心元素：
-- **主角**：[谁]
-- **困境/冲突**：[面临什么问题]
-- **目标**：[想要达成什么]
-- **障碍/代价**：[阻碍是什么]
+Based on this sentence, identify the following core elements:
+- **Protagonist**: [Who]
+- **Dilemma/Conflict**: [What problem faced]
+- **Goal**: [What to achieve]
+- **Obstacle/Cost**: [What hinders]
 
-## 下一步
+## Next Steps
 
-✅ **Level 1 规格已完成**
+✅ **Level 1 Specification Completed**
 
-**扩展建议**：
-1. 将一句话扩展为一段话（100-200字）
-2. 运行 `/specify` 命令，输入扩展的段落
-3. 系统将自动升级到 Level 2
+**Expansion Suggestions**:
+1. Expand one sentence into a paragraph (100-200 words)
+2. Run `/specify` command, input expanded paragraph
+3. System will automatically upgrade to Level 2
 
-**扩展提示**：
-- 加入主角的背景和动机
-- 明确主要冲突的起因
-- 暗示故事的走向和结局可能性
+**Expansion Hints**:
+- Add protagonist's background and motivation
+- Clarify cause of main conflict
+- Hint at story direction and possible ending
 ```
 
 ---
 
-#### Level 2 规格模板（一段话概要）
+#### Level 2 Specification Template (Premise)
 
 ```markdown
-# 故事规格书
+# Story Specification
 
-## 元数据
-- 故事名称：[名称]
-- 版本：1.1.0-L2（一段话）
-- 创建日期：[YYYY-MM-DD]
-- 当前层级：Level 2
-- 作者：[作者名]
+## Metadata
+- Story Name: [Name]
+- Version: 1.1.0-L2 (Premise)
+- Creation Date: [YYYY-MM-DD]
+- Current Level: Level 2
+- Author: [Author Name]
 
-## 一句话故事（Logline）
+## Logline
 
-[从Level 1继承，或新提取]
+[Inherit from Level 1, or extract new]
 
-## 一段话概要（Premise）
+## Premise
 
-[100-200字的故事梗概，包含主角、冲突、目标、障碍]
+[Story summary of 100-200 words, including protagonist, conflict, goal, obstacle]
 
-**示例结构**：
-{主角背景}在{起始情境}下，发现/遭遇{核心冲突}。为了{目标}，他/她必须{行动}，但{主要障碍}使得{困难/代价}。最终{暗示结局走向}。
+**Example Structure**:
+{Protagonist Background} in {Starting Situation}, discovers/encounters {Core Conflict}. To {Goal}, he/she must {Action}, but {Main Obstacle} makes {Difficulty/Cost}. Finally {Hint at Ending Direction}.
 
-## 核心要素
+## Core Elements
 
-### 主角设定
-- **身份**：[职业/年龄/背景]
-- **性格特点**：[2-3个关键词]
-- **核心欲望**：[想要什么]
-- **致命弱点**：[阻碍他的是什么]
+### Protagonist Setting
+- **Identity**: [Occupation/Age/Background]
+- **Personality Traits**: [2-3 Keywords]
+- **Core Desire**: [What they want]
+- **Fatal Flaw**: [What hinders them]
 
-### 核心冲突
-- **外部冲突**：[与什么对抗]
-- **内部冲突**：[内心挣扎是什么]
-- **冲突起因**：[为什么现在爆发]
+### Core Conflict
+- **External Conflict**: [Against what]
+- **Internal Conflict**: [What inner struggle]
+- **Conflict Cause**: [Why outbreak now]
 
-### 故事走向
-- **起点**：[故事从哪里开始]
-- **中点**：[预计的转折点]
-- **终点**：[可能的结局方向]
+### Story Direction
+- **Start**: [Where story begins]
+- **Midpoint**: [Expected turning point]
+- **End**: [Possible ending direction]
 
-## 类型初步定位
+## Preliminary Genre Positioning
 
-- **主类型**：[玄幻/都市/历史/科幻等]
-- **子类型**：[具体流派]
-- **参考作品**：类似[作品名]的[某个特点]
+- **Main Genre**: [Fantasy/Urban/Historical/Sci-Fi etc.]
+- **Sub-genre**: [Specific genre]
+- **Reference Work**: Similar to [Feature] of [Work Name]
 
-## 下一步
+## Next Steps
 
-✅ **Level 2 规格已完成**
+✅ **Level 2 Specification Completed**
 
-**扩展建议**：
-1. 将概要扩展为一页纸大纲（约500字）
-2. 增加三幕结构、主要角色、关键场景
-3. 运行 `/specify` 命令，输入扩展内容
-4. 系统将自动升级到 Level 3
+**Expansion Suggestions**:
+1. Expand premise into one-page outline (about 500 words)
+2. Add three-act structure, main characters, key scenes
+3. Run `/specify` command, input expanded content
+4. System will automatically upgrade to Level 3
 
-**扩展提示**：
-- 明确三幕结构的分界点
-- 增加2-3个主要配角
-- 列出5-10个关键场景
-- 思考世界观的基本设定
+**Expansion Hints**:
+- Clarify three-act structure boundaries
+- Add 2-3 main supporting characters
+- List 5-10 key scenes
+- Think about basic world settings
 ```
 
 ---
 
-#### Level 3 规格模板（一页纸大纲）
+#### Level 3 Specification Template (One-Page Spec)
 
 ```markdown
-# 故事规格书
+# Story Specification
 
-## 元数据
-- 故事名称：[名称]
-- 版本：1.2.0-L3（一页纸）
-- 创建日期：[YYYY-MM-DD]
-- 当前层级：Level 3
-- 作者：[作者名]
+## Metadata
+- Story Name: [Name]
+- Version: 1.2.0-L3 (One-Page)
+- Creation Date: [YYYY-MM-DD]
+- Current Level: Level 3
+- Author: [Author Name]
 
-## 一、故事核心
+## I. Story Core
 
-### 一句话故事
-[从Level 1继承]
+### Logline
+[Inherit from Level 1]
 
-### 故事简介（100-200字）
-[从Level 2继承]
+### Story Brief (100-200 words)
+[Inherit from Level 2]
 
-### 核心主题
-- **主题**：[如"成长"、"救赎"、"复仇"]
-- **情感内核**：[希望读者感受到什么]
+### Core Theme
+- **Theme**: [e.g., "Growth", "Redemption", "Revenge"]
+- **Emotional Core**: [What reader should feel]
 
-## 二、主要角色（3-5人）
+## II. Main Characters (3-5 people)
 
-### 主角
-- **姓名**：[名字]
-- **身份/背景**：[简要]
-- **核心欲望**：[想要什么]
-- **性格弧光**：从[A状态] → 经历[冲突] → 成为[B状态]
+### Protagonist
+- **Name**: [Name]
+- **Identity/Background**: [Brief]
+- **Core Desire**: [What they want]
+- **Character Arc**: From [State A] → Experience [Conflict] → Become [State B]
 
-### 主要配角1
-[姓名、功能定位、与主角关系]
+### Main Support 1
+[Name, Function, Relationship with Protagonist]
 
-### 主要配角2
-[姓名、功能定位、与主角关系]
+### Main Support 2
+[Name, Function, Relationship with Protagonist]
 
-### 反派/对抗力量
-[姓名/势力、动机、威胁程度]
+### Antagonist/Opposing Force
+[Name/Faction, Motivation, Threat Level]
 
-## 三、三幕结构
+## III. Three-Act Structure
 
-### 第一幕：建立（预计篇幅的25%）
-- **起始**：[日常世界]
-- **触发事件**：[打破平衡的事件]
-- **决定**：[主角决定行动]
-- **进入新世界**：[离开舒适区]
+### Act 1: Setup (Est. 25%)
+- **Start**: [Ordinary World]
+- **Inciting Incident**: [Event breaking balance]
+- **Decision**: [Protagonist decides to act]
+- **Crossing Threshold**: [Leaving comfort zone]
 
-### 第二幕：对抗（预计篇幅的50%）
-- **上半段**：[尝试与失败]
-- **中点**：[重大转折/假胜利或假失败]
-- **下半段**：[形势恶化/黑暗时刻]
-- **最低点**：[一切似乎失败]
+### Act 2: Confrontation (Est. 50%)
+- **First Half**: [Trials and failures]
+- **Midpoint**: [Major twist/False victory or failure]
+- **Second Half**: [Situation worsens/Dark moment]
+- **Low Point**: [All seems lost]
 
-### 第三幕：解决（预计篇幅的25%）
-- **顿悟**：[主角的觉醒/成长]
-- **最终对抗**：[高潮战斗/冲突]
-- **结局**：[新的平衡状态]
+### Act 3: Resolution (Est. 25%)
+- **Epiphany**: [Protagonist awakening/growth]
+- **Climax**: [Final battle/conflict]
+- **Resolution**: [New balance state]
 
-## 四、关键场景（5-10个）
+## IV. Key Scenes (5-10)
 
-1. **[场景1名称]**：[1-2句描述，情感作用]
-2. **[场景2名称]**：[描述]
-3. **[场景3名称]**：[描述]
+1. **[Scene 1 Name]**: [1-2 sentences description, emotional function]
+2. **[Scene 2 Name]**: [Description]
+3. **[Scene 3 Name]**: [Description]
 4. ...
 
-## 五、目标定位
+## V. Target Positioning
 
-### 目标读者
-- **年龄段**：[范围]
-- **类型偏好**：[玄幻/都市/历史等]
-- **阅读场景**：[碎片时间/深度阅读]
+### Target Audience
+- **Age Group**: [Range]
+- **Genre Preference**: [Fantasy/Urban/Historical etc.]
+- **Reading Scenario**: [Fragmented time/Deep reading]
 
-### 市场定位
-- **主类型**：[类型]
-- **子类型**：[流派]
-- **竞品分析**：类似[作品1]的[特点] + [作品2]的[特点]
-- **差异化**：[核心卖点]
+### Market Positioning
+- **Main Genre**: [Genre]
+- **Sub-genre**: [Sub-genre]
+- **Competitor Analysis**: Similar to [Feature] of [Work 1] + [Feature] of [Work 2]
+- **Differentiation**: [Core selling point]
 
-### 量化目标
-- **目标字数**：[3万/10万/50万]
-- **更新频率**：[日更/周更]
-- **完成时间**：[预计时长]
+### Quantitative Goals
+- **Target Word Count**: [30k/100k/500k]
+- **Update Frequency**: [Daily/Weekly]
+- **Completion Time**: [Estimated duration]
 
-## 六、下一步
+## VI. Next Steps
 
-✅ **Level 3 规格已完成**
+✅ **Level 3 Specification Completed**
 
-**扩展建议**：
-1. 将一页纸大纲扩展为完整规格
-2. 增加详细的线索管理规格（多线索、伏笔、交汇点）
-3. 增加成功标准、约束条件、风险评估
-4. 运行 `/specify` 命令，告诉AI"扩展到完整规格"
-5. 系统将自动升级到 Level 4
+**Expansion Suggestions**:
+1. Expand one-page outline into full specification
+2. Add detailed clue management specification (multi-thread, foreshadowing, intersection)
+3. Add success criteria, constraints, risk assessment
+4. Run `/specify` command, tell AI "Expand to full specification"
+5. System will automatically upgrade to Level 4
 
-**扩展提示**：
-- 明确多线索管理策略（如有）
-- 列出所有约束条件和红线
-- 标记5-10个需要澄清的决策点
-- 准备参考资料和灵感来源
+**Expansion Hints**:
+- Clarify multi-thread management strategy (if any)
+- List all constraints and red lines
+- Mark 5-10 decision points needing clarification
+- Prepare reference materials and inspiration sources
 ```
 
 ---
 
-#### Level 4 规格模板（完整规格）
+#### Level 4 Specification Template (Full Specification)
 
-使用完整九章规格结构（保持原有模板）：
+Use complete nine-chapter specification structure (maintain original template):
 
 ```markdown
-# 故事规格书
+# Story Specification
 
-## 元数据
-- 故事名称：[名称]
-- 版本：1.0.0
-- 创建日期：[YYYY-MM-DD]
-- 状态：草案
-- 作者：[作者名]
+## Metadata
+- Story Name: [Name]
+- Version: 1.0.0
+- Creation Date: [YYYY-MM-DD]
+- Status: Draft
+- Author: [Author Name]
 
-## 一、故事概要
+## I. Story Summary
 
-### 一句话故事（电梯演讲）
-[30字以内描述故事核心]
+### Logline (Elevator Pitch)
+[Describe story core within 30 words]
 
-### 故事简介（100-200字）
-[扩展描述，包含主要冲突和结局暗示]
+### Story Brief (100-200 words)
+[Expanded description, including main conflict and ending hint]
 
-### 核心主题
-- 主题：[如"成长"、"救赎"、"复仇"]
-- 深层含义：[想要表达什么]
-- 情感内核：[希望读者感受到什么]
+### Core Theme
+- Theme: [e.g., "Growth", "Redemption", "Revenge"]
+- Deeper Meaning: [What to express]
+- Emotional Core: [What reader should feel]
 
-## 二、目标定位
+## II. Target Positioning
 
-### 目标读者画像
-- 年龄段：[需要澄清：具体年龄范围]
-- 性别倾向：[需要澄清：男性向/女性向/通用]
-- 阅读层次：[需要澄清：入门/进阶/资深]
-- 类型偏好：[玄幻/都市/历史等]
-- 阅读场景：[碎片时间/深度阅读]
+### Target Audience Persona
+- Age Group: [Needs Clarification: Specific age range]
+- Gender Inclination: [Needs Clarification: Male/Female/General]
+- Reading Level: [Needs Clarification: Beginner/Advanced/Veteran]
+- Genre Preference: [Fantasy/Urban/Historical etc.]
+- Reading Scenario: [Fragmented time/Deep reading]
 
-### 市场定位
-- 主类型：[需要澄清：爽文/悬疑/言情/严肃文学/科幻/奇幻/历史/都市/其他]
-- 子类型：[具体流派，如系统流/本格推理/霸总文等]
-- 类型融合：[如有，如悬疑+爱情]
-- 类型标签：[主标签] + [副标签]
-- 竞品分析：类似[作品1]的[特点] + [作品2]的[特点]
-- 差异化：[需要澄清：核心卖点是什么]
+### Market Positioning
+- Main Genre: [Needs Clarification: Page-turner/Mystery/Romance/Serious Lit/Sci-Fi/Fantasy/History/Urban/Other]
+- Sub-genre: [Specific genre, e.g., System/Honkaku Mystery/CEO Romance etc.]
+- Genre Fusion: [If any, e.g., Mystery + Romance]
+- Genre Tags: [Main Tag] + [Sub Tag]
+- Competitor Analysis: Similar to [Feature] of [Work 1] + [Feature] of [Work 2]
+- Differentiation: [Needs Clarification: What is core selling point]
 
-## 三、成功标准
+## III. Success Criteria
 
-### 量化指标
-- 目标字数：[需要澄清：3万/10万/50万]
-- 更新频率：[需要澄清：日更/周更/月更]
-- 完成时间：[预计时长]
-- 商业目标：[如适用]
+### Quantitative Indicators
+- Target Word Count: [Needs Clarification: 30k/100k/500k]
+- Update Frequency: [Needs Clarification: Daily/Weekly/Monthly]
+- Completion Time: [Estimated duration]
+- Commercial Goal: [If applicable]
 
-### 质量标准
-- 逻辑一致性：[必须/应该]无明显漏洞
-- 人物丰满度：主角有[X]个层次，配角有[Y]个层次
-- 情节紧凑度：[需要澄清：每章都有冲突/允许过渡章节]
-- 文字水准：[需要澄清：通俗易懂/文学性/专业性]
+### Quality Standards
+- Logic Consistency: [Must/Should] no obvious loopholes
+- Character Fullness: Protagonist has [X] layers, Support has [Y] layers
+- Plot Compactness: [Needs Clarification: Conflict every chapter/Allow transition chapters]
+- Writing Level: [Needs Clarification: Easy to understand/Literary/Professional]
 
-### 读者反馈指标
-- 目标评分：[如适用]
-- 互动率：[评论/收藏比例]
-- 完读率：[期望的读者完成度]
+### Reader Feedback Indicators
+- Target Score: [If applicable]
+- Interaction Rate: [Comment/Favorite ratio]
+- Completion Rate: [Expected reader completion]
 
-## 四、核心需求
+## IV. Core Requirements
 
-### 必须包含（P0）
-1. [核心情节元素1]
-2. [核心人物关系]
-3. [核心冲突设定]
-4. [必要的世界观元素]
+### Must Include (P0)
+1. [Core Plot Element 1]
+2. [Core Character Relationship]
+3. [Core Conflict Setting]
+4. [Necessary World Element]
 
-### 应该包含（P1）
-1. [增强体验的元素]
-2. [深化主题的内容]
-3. [丰富人物的支线]
+### Should Include (P1)
+1. [Elements Enhancing Experience]
+2. [Content Deepening Theme]
+3. [Sub-lines Enriching Characters]
 
-### 可以包含（P2）
-1. [锦上添花的内容]
-2. [可选的支线]
-3. [额外的彩蛋]
+### Can Include (P2)
+1. [Icing on the Cake Content]
+2. [Optional Sub-lines]
+3. [Extra Easter Eggs]
 
-## 五、线索管理规格
+## V. Clue Management Specification
 
-> **多线索管理说明**：本章节定义故事的所有线索(主线、副线)及其管理策略，用于解决多线索并行推进、交汇时机控制、修改后一致性保证等问题。
+> **Multi-Thread Management Note**: This chapter defines all story clues (main, sub) and their management strategies, solving problems like parallel advancement, intersection timing control, and consistency assurance after modification.
 
-### 5.1 线索定义表
+### 5.1 Clue Definition Table
 
-定义所有故事线索的基本信息：
+Define basic info for all story clues:
 
-| 线索ID | 线索名称 | 类型 | 优先级 | 起止章节 | 核心冲突 | 主要角色 |
+| Clue ID | Clue Name | Type | Priority | Chapter Range | Core Conflict | Main Characters |
 |-------|---------|------|--------|---------|---------|---------|
-| PL-01 | [线索1名称，如"家庭线"] | 主线/支线/主线支撑 | P0/P1/P2 | [起始章-结束章] | [线索的核心冲突] | [涉及的主要角色] |
-| PL-02 | [线索2名称，如"爱情线"] | 主线/支线/主线支撑 | P0/P1/P2 | [起始章-结束章] | [线索的核心冲突] | [涉及的主要角色] |
+| PL-01 | [Clue 1 Name, e.g., "Family Line"] | Main/Sub/Support | P0/P1/P2 | [Start-End Chapter] | [Core Conflict of Clue] | [Main Characters Involved] |
+| PL-02 | [Clue 2 Name, e.g., "Love Line"] | Main/Sub/Support | P0/P1/P2 | [Start-End Chapter] | [Core Conflict of Clue] | [Main Characters Involved] |
 
-**说明**：
-- 线索ID统一格式：PL-XX(Plotline的缩写)
-- 类型：主线(驱动故事发展)、支线(丰富情节)、主线支撑(为主线服务)
-- 优先级：P0(必须)、P1(重要)、P2(可选)
+**Description**:
+- Clue ID format: PL-XX (Abbr. of Plotline)
+- Type: Main (Drives story), Sub (Enriches plot), Support (Serves main)
+- Priority: P0 (Must), P1 (Important), P2 (Optional)
 
-### 5.2 线索节奏规划
+### 5.2 Clue Pacing Planning
 
-规划每条线索在不同阶段的活跃程度：
+Plan activity level of each clue in different stages:
 
-| 线索ID | 第一卷 | 第二卷 | 第三卷 | 第四卷 |
+| Clue ID | Volume 1 | Volume 2 | Volume 3 | Volume 4 |
 |-------|--------|--------|--------|--------|
-| PL-01 | ⭐⭐⭐ 活跃 | ⭐⭐ 中等 | ⭐ 背景 | ⭐⭐⭐ 活跃 |
-| PL-02 | ⭐⭐ 启动 | ⭐⭐⭐ 活跃 | ⭐⭐⭐ 活跃 | ⭐⭐ 收尾 |
+| PL-01 | ⭐⭐⭐ Active | ⭐⭐ Medium | ⭐ Background | ⭐⭐⭐ Active |
+| PL-02 | ⭐⭐ Start | ⭐⭐⭐ Active | ⭐⭐⭐ Active | ⭐⭐ End |
 
-**说明**：
-- ⭐⭐⭐ 活跃：本卷重点推进，大量篇幅
-- ⭐⭐ 中等：正常推进，适量篇幅
-- ⭐ 背景：偶尔提及，保持存在感
-- ❌ 未出场：线索尚未启动
+**Description**:
+- ⭐⭐⭐ Active: Focus of this volume, large space
+- ⭐⭐ Medium: Normal progress, moderate space
+- ⭐ Background: Occasionally mentioned, maintain presence
+- ❌ Not Appeared: Clue not started
 
-### 5.3 线索交汇点规划
+### 5.3 Clue Intersection Planning
 
-预先规划线索之间的交汇点，避免AI随意发挥：
+Pre-plan intersection points between clues to avoid AI randomness:
 
-| 交汇点ID | 章节 | 涉及线索 | 交汇内容 | 预期效果 |
+| Intersection ID | Chapter | Involved Clues | Intersection Content | Expected Effect |
 |---------|------|---------|---------|---------|
-| X-001 | [章节号] | PL-XX+PL-YY | [两条/多条线索如何交汇，发生什么] | [对故事和人物的影响] |
-| X-002 | [章节号] | PL-XX+PL-YY+PL-ZZ | [交汇的具体内容] | [预期产生的效果] |
+| X-001 | [Chapter No.] | PL-XX+PL-YY | [How two/more clues intersect, what happens] | [Impact on story and characters] |
+| X-002 | [Chapter No.] | PL-XX+PL-YY+PL-ZZ | [Specific content of intersection] | [Expected effect] |
 
-**说明**：
-- 交汇点ID统一格式：X-XXX(Intersection的首字母)
-- 涉及线索：列出所有在此处交汇的线索ID
-- 交汇内容：具体的情节或事件
-- 预期效果：情感冲突、情节转折、人物成长等
+**Description**:
+- Intersection ID format: X-XXX (First letter of Intersection)
+- Involved Clues: List all clue IDs intersecting here
+- Intersection Content: Specific plot or event
+- Expected Effect: Emotional conflict, plot twist, character growth, etc.
 
-### 5.4 伏笔管理表
+### 5.4 Foreshadowing Management Table
 
-管理所有伏笔的埋设与揭晓，确保不遗漏：
+Manage planting and revealing of all foreshadowing, ensuring no omissions:
 
-| 伏笔ID | 埋设章节 | 涉及线索 | 伏笔内容 | 揭晓章节 | 揭晓方式 |
+| Foreshadowing ID | Plant Chapter | Involved Clues | Content | Reveal Chapter | Reveal Method |
 |-------|---------|---------|---------|---------|---------|
-| F-001 | [章节号] | PL-XX | [埋下什么伏笔，具体内容] | [章节号] | [如何揭晓，通过什么事件] |
-| F-002 | [章节号] | PL-XX+PL-YY | [跨线索的伏笔内容] | [章节号] | [揭晓方式] |
+| F-001 | [Chapter No.] | PL-XX | [What foreshadowing planted, specific content] | [Chapter No.] | [How revealed, through what event] |
+| F-002 | [Chapter No.] | PL-XX+PL-YY | [Cross-clue foreshadowing content] | [Chapter No.] | [Reveal Method] |
 
-**说明**：
-- 伏笔ID统一格式：F-XXX(Foreshadowing的首字母)
-- 涉及线索：伏笔关联的线索，可能跨多条线索
-- 埋设与揭晓的章节号必须明确，避免遗忘
+**Description**:
+- Foreshadowing ID format: F-XXX (First letter of Foreshadowing)
+- Involved Clues: Clues related to foreshadowing, may cross multiple clues
+- Plant and Reveal chapter numbers must be explicit to avoid forgetting
 
-### 5.5 线索修改决策矩阵
+### 5.5 Clue Modification Decision Matrix
 
-当需要修改某条线索时，必须按此流程评估影响：
+When needing to modify a clue, must assess impact via this flow:
 
-**修改检查清单**：
-1. 检查 5.2节：该线索在哪些卷活跃？活跃度是否需要调整？
-2. 检查 5.3节：该线索涉及哪些交汇点？交汇点时机是否需要改变？
-3. 检查 5.4节：该线索涉及哪些伏笔？伏笔埋设/揭晓是否需要调整？
-4. 检查 creative-plan.md：哪些章节段需要同步修改？
-5. 检查 tasks.md：哪些写作任务需要重新规划？
-6. 检查 plot-tracker.json：当前进展如何，后续如何调整？
+**Modification Checklist**:
+1. Check Section 5.2: In which volumes is this clue active? Does activity need adjustment?
+2. Check Section 5.3: Which intersections does this clue involve? Does intersection timing need change?
+3. Check Section 5.4: Which foreshadowings does this clue involve? Does planting/revealing need adjustment?
+4. Check creative-plan.md: Which chapter segments need synchronous modification?
+5. Check tasks.md: Which writing tasks need replanning?
+6. Check plot-tracker.json: What is current progress, how to adjust subsequently?
 
-**示例**：假设修改PL-03(爱情线)，将某角色出场提前到第50章(原计划第100章)：
-- ✅ 交汇点X-004需要提前或取消
-- ✅ 第二卷的章节段活跃线索需要调整
-- ✅ 相关任务的"涉及线索"字段需要更新
-- ✅ 可能影响伏笔F-002的揭晓时机
+**Example**: Assume modifying PL-03 (Love Line), advancing a character's appearance to Chapter 50 (originally planned Chapter 100):
+- ✅ Intersection X-004 needs to be advanced or cancelled
+- ✅ Active clues in Volume 2 chapter segments need adjustment
+- ✅ "Involved Clues" field in related tasks needs update
+- ✅ May affect reveal timing of foreshadowing F-002
 
-### 5.6 线索一致性原则
+### 5.6 Clue Consistency Principles
 
-**规划原则**：
-- 每条线索必须有明确的起承转合
-- 主线占用总篇幅的40-60%
-- 支线不超过2-3条，避免过于分散
-- 线索交汇应服务于主题，不为交汇而交汇
-- 长时间休眠的线索(>20章)必须有合理理由
+**Planning Principles**:
+- Each clue must have clear beginning, development, twist, and end
+- Main line occupies 40-60% of total space
+- Sub-lines not exceed 2-3, avoid being too scattered
+- Clue intersection should serve theme, not intersect for intersection's sake
+- Clues dormant for long time (>20 chapters) must have reasonable reason
 
-**验证标准**：
-- [ ] 所有线索都有明确的冲突和解决方案
-- [ ] 线索节奏分布合理，没有过度集中或空白
-- [ ] 交汇点数量适中(建议每50章2-3个)
-- [ ] 伏笔都有对应的揭晓计划
-- [ ] 修改决策矩阵可操作
+**Verification Standards**:
+- [ ] All clues have clear conflicts and solutions
+- [ ] Clue pacing distribution reasonable, no over-concentration or blank
+- [ ] Intersection quantity moderate (Suggest 2-3 every 50 chapters)
+- [ ] Foreshadowings have corresponding reveal plans
+- [ ] Modification decision matrix actionable
 
-## 六、约束条件
+## VI. Constraints
 
-### 内容红线
-- 绝对禁止：[如违法内容]
-- 需要避免：[如敏感话题]
-- 谨慎处理：[需要澄清：如何处理情感关系]
+### Content Red Lines
+- Absolutely Prohibited: [e.g., Illegal content]
+- Need to Avoid: [e.g., Sensitive topics]
+- Handle Carefully: [Needs Clarification: How to handle emotional relationships]
 
-### 创作约束
-- 知识限制：[需要澄清：是否需要专业知识]
-- 时间限制：[完成期限]
-- 资源限制：[如需要的参考资料]
+### Creative Constraints
+- Knowledge Limit: [Needs Clarification: Whether professional knowledge needed]
+- Time Limit: [Completion deadline]
+- Resource Limit: [e.g., Reference materials needed]
 
-### 技术约束
-- 发布平台：[需要澄清：网文平台/出版/自媒体]
-- 格式要求：[章节长度等]
-- 更新要求：[固定时间等]
+### Technical Constraints
+- Publishing Platform: [Needs Clarification: Web novel platform/Publishing/Self-media]
+- Format Requirement: [Chapter length etc.]
+- Update Requirement: [Fixed time etc.]
 
-## 七、风险评估
+## VII. Risk Assessment
 
-### 创作风险
-- 写作难度：[需要澄清：挑战在哪里]
-- 灵感枯竭：[如何应对]
-- 逻辑漏洞：[复杂度评估]
-- 多线索管理：[需要澄清：线索数量是否过多]
+### Creative Risk
+- Writing Difficulty: [Needs Clarification: Where is the challenge]
+- Inspiration Exhaustion: [How to cope]
+- Logic Loopholes: [Complexity assessment]
+- Multi-thread Management: [Needs Clarification: Whether too many clues]
 
-### 市场风险
-- 同质化：[如何差异化]
-- 读者接受度：[需要澄清：创新是否过度]
-- 时效性：[题材是否会过时]
+### Market Risk
+- Homogeneity: [How to differentiate]
+- Reader Acceptance: [Needs Clarification: Whether innovation excessive]
+- Timeliness: [Whether subject will be outdated]
 
-## 八、核心决策点 [需要澄清]
+## VIII. Core Decision Points [Needs Clarification]
 
-以下关键决策需要在 `/clarify` 阶段明确：
-1. [决策1：如主角性格是热血还是冷静]
-2. [决策2：如结局是开放还是圆满]
-3. [决策3：如叙事是单线还是多线]
-4. [决策4：如节奏是快速还是缓慢]
-5. [决策5：如风格是轻松还是严肃]
+The following key decisions need to be clarified in `/clarify` stage:
+1. [Decision 1: e.g., Protagonist personality hot-blooded or calm]
+2. [Decision 2: e.g., Ending open or happy]
+3. [Decision 3: e.g., Narrative single line or multi-line]
+4. [Decision 4: e.g., Pacing fast or slow]
+5. [Decision 5: e.g., Style relaxed or serious]
 
-## 九、验证清单
+## IX. Verification Checklist
 
-- [ ] 故事概要清晰明确
-- [ ] 目标读者定义准确
-- [ ] 成功标准可衡量
-- [ ] 核心需求已列出
-- [ ] 线索管理规格已定义
-- [ ] 约束条件已识别
-- [ ] 风险已评估
-- [ ] 关键决策点已标记
+- [ ] Story summary clear and definite
+- [ ] Target audience defined accurately
+- [ ] Success criteria measurable
+- [ ] Core requirements listed
+- [ ] Clue management specification defined
+- [ ] Constraints identified
+- [ ] Risks assessed
+- [ ] Key decision points marked
 
-## 附录：参考资料
+## Appendix: Reference Materials
 
-### 灵感来源
-- [来源1]
-- [来源2]
+### Inspiration Sources
+- [Source 1]
+- [Source 2]
 
-### 参考作品
-- [作品1]：参考其[特点]
-- [作品2]：参考其[特点]
+### Reference Works
+- [Work 1]: Refer to its [Feature]
+- [Work 2]: Refer to its [Feature]
 
-### 补充说明
-[其他需要说明的内容]
+### Supplementary Explanation
+[Other contents needing explanation]
 ```
 
-### 4. 根据层级输出规格
+### 4. Output Specification Based on Level
 
-**根据步骤0判断的层级，选择相应模板输出**：
+**Select corresponding template output based on level judged in Step 0**:
 
-- **Level 1**：输出一句话规格 + 核心元素识别 + 扩展指导
-- **Level 2**：输出一段话规格 + 核心要素 + 类型定位 + 扩展指导
-- **Level 3**：输出一页纸规格 + 三幕结构 + 关键场景 + 扩展指导
-- **Level 4**：输出完整九章规格 + `[需要澄清]` 标记
+- **Level 1**: Output logline spec + core element identification + expansion guidance
+- **Level 2**: Output premise spec + core elements + genre positioning + expansion guidance
+- **Level 3**: Output one-page spec + three-act structure + key scenes + expansion guidance
+- **Level 4**: Output full nine-chapter spec + `[Needs Clarification]` markers
 
-**输出后的提示**：
+**Post-output Hints**:
 
-对于 Level 1-3，完成后告知用户：
+For Level 1-3, inform user upon completion:
 ```
-✅ Level X 规格已完成！
+✅ Level X Specification Completed!
 
-**当前进度**：一句话 → 一段话 → 一页纸 → 完整规格
-            [=====---]（您在这里）
+**Current Progress**: Logline → Premise → One-Page → Full Spec
+                  [=====---] (You are here)
 
-**下一步选项**：
-1. 直接使用当前规格开始创作（适合快速原型）
-2. 扩展到下一层级（更详细的规划）
-3. 运行 `/clarify` 对当前规格进行澄清
+**Next Step Options**:
+1. Start creation directly using current specification (Suitable for rapid prototyping)
+2. Expand to next level (More detailed planning)
+3. Run `/clarify` to clarify current specification
 
-**如何扩展**：
-- 提供更详细的故事描述
-- 再次运行 `/specify [详细描述]`
-- 系统会自动升级到 Level X+1
-```
-
-对于 Level 4，完成后告知用户：
-```
-✅ 完整规格已完成！
-
-**下一步**：
-1. 运行 `/clarify` 澄清所有 [需要澄清] 标记的决策点
-2. 或直接运行 `/plan` 开始制定创作计划
+**How to Expand**:
+- Provide more detailed story description
+- Run `/specify [detailed description]` again
+- System will automatically upgrade to Level X+1
 ```
 
-### 5. 标记需要澄清的点（仅Level 4）
+For Level 4, inform user upon completion:
+```
+✅ Full Specification Completed!
 
-**仅在 Level 4 完整规格中**标记所有需要进一步澄清的决策点：
-- 使用 `[需要澄清：具体问题]` 格式
-- 确保标记 5-10 个关键决策点
-- 这些将在 `/clarify` 步骤中处理
+**Next Step**:
+1. Run `/clarify` to clarify all [Needs Clarification] marked decision points
+2. Or run `/plan` directly to start formulating creative plan
+```
 
-**Level 1-3 不需要标记澄清点**，因为它们本身就是渐进式澄清的过程
+### 5. Mark Points Needing Clarification (Level 4 Only)
 
-### 6. 版本管理
+**Only in Level 4 Full Specification** mark all decision points needing further clarification:
+- Use `[Needs Clarification: Specific Question]` format
+- Ensure marking 5-10 key decision points
+- These will be handled in `/clarify` step
 
-**渐进式版本号规则**：
+**Level 1-3 do not need to mark clarification points**, as they are progressive clarification processes themselves
 
-- **Level 1**：1.0.0-L1（一句话）
-- **Level 2**：1.1.0-L2（一段话）
-- **Level 3**：1.2.0-L3（一页纸）
-- **Level 4**：1.0.0（完整规格-草案）
-- **澄清后**：1.1.0（澄清版）
-- **计划后**：1.2.0（确认版）
-- **执行中**：2.0.0（执行版）
+### 6. Version Management
 
-**升级规则**：
-- Level 1 → Level 2：小版本号+1
-- Level 2 → Level 3：小版本号+1
-- Level 3 → Level 4：重置为1.0.0（进入正式规格周期）
-- Level 4 后续修改：按原有规则
+**Progressive Version Number Rules**:
 
-### 7. 输出和保存
+- **Level 1**: 1.0.0-L1 (Logline)
+- **Level 2**: 1.1.0-L2 (Premise)
+- **Level 3**: 1.2.0-L3 (One-Page)
+- **Level 4**: 1.0.0 (Full Spec - Draft)
+- **After Clarify**: 1.1.0 (Clarified)
+- **After Plan**: 1.2.0 (Confirmed)
+- **In Execution**: 2.0.0 (Execution)
 
-- 将规格保存到 `stories/[story-name]/specification.md`
-- 输出创建成功消息
-- **根据层级提示下一步**：
-  - Level 1-3：提示如何扩展到下一层级
-  - Level 4：提示运行 `/clarify` 澄清关键决策
+**Upgrade Rules**:
+- Level 1 → Level 2: Minor version +1
+- Level 2 → Level 3: Minor version +1
+- Level 3 → Level 4: Reset to 1.0.0 (Enter formal spec cycle)
+- Level 4 subsequent modification: Follow original rules
 
-## 注意事项
+### 7. Output and Save
 
-### 渐进式规格的价值
+- Save specification to `stories/[story-name]/specification.md`
+- Output creation success message
+- **Prompt next step based on level**:
+  - Level 1-3: Hint how to expand to next level
+  - Level 4: Hint to run `/clarify` to clarify key decisions
 
-**为什么需要渐进式规格？**
-- ✅ **降低门槛**：从一句话开始，不需要一次性完成完整规格
-- ✅ **快速验证**：在投入大量精力前，验证创意是否可行
-- ✅ **自然演进**：随着思考深入，自然扩展规格细节
-- ✅ **避免过度规划**：根据实际需要决定规格深度
+## Notes
 
-**何时使用哪个层级？**
-- **Level 1**：灵感阶段，快速记录创意
-- **Level 2**：验证阶段，确认故事是否值得写
-- **Level 3**：原型阶段，快速开始写作（适合短篇、中篇）
-- **Level 4**：正式阶段，长篇小说或需要详细规划的作品
+### Value of Progressive Specification
 
-### 聚焦于 WHAT 而非 HOW
-- ✅ 正确："需要一个让读者恨之入骨的反派"
-- ❌ 错误："反派在第三章出场，使用倒叙手法"
+**Why Progressive Specification?**
+- ✅ **Lower Threshold**: Start from one sentence, no need to complete full spec at once
+- ✅ **Rapid Validation**: Verify if idea is feasible before investing much effort
+- ✅ **Natural Evolution**: Expand details naturally as thinking deepens
+- ✅ **Avoid Over-planning**: Decide spec depth based on actual needs
 
-### 保持规格的灵活性
-- 留出澄清空间（Level 4）
-- 不要过早确定细节（Level 1-3）
-- 标记所有不确定点（Level 4）
+**When to use which level?**
+- **Level 1**: Inspiration stage, quickly record ideas
+- **Level 2**: Validation stage, confirm if story is worth writing
+- **Level 3**: Prototype stage, start writing quickly (Suitable for short, medium stories)
+- **Level 4**: Formal stage, long novels or works needing detailed planning
 
-### 渐进式扩展的原则
-- **继承性**：Level N+1 应包含 Level N 的所有内容
-- **增量性**：每次只增加必要的细节
-- **可逆性**：可以回到较低层级修改核心要素
-- **可跳跃性**：可以直接从 Level 1 跳到 Level 4（如果已经想清楚）
+### Focus on WHAT not HOW
+- ✅ Correct: "Need an antagonist that readers hate to the bone"
+- ❌ Wrong: "Antagonist appears in Chapter 3, using flashback technique"
 
-### 与后续步骤的关系
-- **Level 1-3**：可以直接开始写作（适合探索性创作）
-- **Level 4**：运行 `/clarify` 处理所有 `[需要澄清]` 标记
-- **澄清后**：运行 `/plan` 制定创作计划
-- **执行时**：运行 `/analyze` 验证实现是否符合规格
+### Keep Specification Flexible
+- Leave room for clarification (Level 4)
+- Don't determine details too early (Level 1-3)
+- Mark all uncertain points (Level 4)
 
-记住：**规格定义目标，而非路径。渐进式规格让你从模糊到清晰，而不是从一开始就要求清晰。**
+### Principles of Progressive Expansion
+- **Inheritance**: Level N+1 should contain all content of Level N
+- **Incrementality**: Only add necessary details each time
+- **Reversibility**: Can go back to lower level to modify core elements
+- **Jumpability**: Can jump directly from Level 1 to Level 4 (if already thought through)
+
+### Relationship with Subsequent Steps
+- **Level 1-3**: Can start writing directly (Suitable for exploratory creation)
+- **Level 4**: Run `/clarify` to handle all `[Needs Clarification]` markers
+- **After Clarify**: Run `/plan` to formulate creative plan
+- **During Execution**: Run `/analyze` to verify if implementation meets specification
+
+Remember: **Specification defines the goal, not the path. Progressive specification takes you from vague to clear, rather than demanding clarity from the start.**

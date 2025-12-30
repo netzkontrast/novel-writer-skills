@@ -38,7 +38,7 @@ export class PluginManager {
   }
 
   /**
-   * 扫描并加载所有插件
+   * Scan and load all plugins
    */
   async loadPlugins(): Promise<void> {
     try {
@@ -46,24 +46,24 @@ export class PluginManager {
       const plugins = await this.scanPlugins();
 
       if (plugins.length === 0) {
-        logger.info('没有发现插件');
+        logger.info('No plugins found');
         return;
       }
 
-      logger.info(`发现 ${plugins.length} 个插件`);
+      logger.info(`Found ${plugins.length} plugins`);
 
       for (const pluginName of plugins) {
         await this.loadPlugin(pluginName);
       }
 
-      logger.success('所有插件加载完成');
+      logger.success('All plugins loaded');
     } catch (error) {
-      logger.error('加载插件失败:', error);
+      logger.error('Failed to load plugins:', error);
     }
   }
 
   /**
-   * 扫描插件目录
+   * Scan plugins directory
    */
   private async scanPlugins(): Promise<string[]> {
     try {
@@ -85,48 +85,48 @@ export class PluginManager {
 
       return plugins;
     } catch (error) {
-      logger.error('扫描插件目录失败:', error);
+      logger.error('Failed to scan plugins directory:', error);
       return [];
     }
   }
 
   /**
-   * 加载单个插件
+   * Load a single plugin
    */
   private async loadPlugin(pluginName: string): Promise<void> {
     try {
-      logger.info(`加载插件: ${pluginName}`);
+      logger.info(`Loading plugin: ${pluginName}`);
 
       const configPath = path.join(this.pluginsDir, pluginName, 'config.yaml');
       const config = await this.loadConfig(configPath);
 
       if (!config) {
-        logger.warn(`插件 ${pluginName} 配置无效`);
+        logger.warn(`Invalid configuration for plugin ${pluginName}`);
         return;
       }
 
-      // 注入命令
+      // Inject commands
       if (config.commands && config.commands.length > 0) {
         await this.injectCommands(pluginName, config.commands);
       }
 
-      // 注入 Skills
+      // Inject Skills
       if (config.skills && config.skills.length > 0) {
         await this.injectSkills(pluginName, config.skills);
       }
 
-      logger.success(`插件 ${pluginName} 加载成功`);
+      logger.success(`Plugin ${pluginName} loaded successfully`);
 
       if (config.installation?.message) {
         console.log(config.installation.message);
       }
     } catch (error) {
-      logger.error(`加载插件 ${pluginName} 失败:`, error);
+      logger.error(`Failed to load plugin ${pluginName}:`, error);
     }
   }
 
   /**
-   * 读取插件配置
+   * Read plugin configuration
    */
   private async loadConfig(configPath: string): Promise<PluginConfig | null> {
     try {
@@ -139,13 +139,13 @@ export class PluginManager {
 
       return config;
     } catch (error) {
-      logger.error(`读取配置文件失败: ${configPath}`, error);
+      logger.error(`Failed to read configuration file: ${configPath}`, error);
       return null;
     }
   }
 
   /**
-   * 注入插件命令
+   * Inject plugin commands
    */
   private async injectCommands(
     pluginName: string,
@@ -160,15 +160,15 @@ export class PluginManager {
 
         await fs.ensureDir(this.commandsDir);
         await fs.copy(sourcePath, destPath);
-        logger.debug(`注入命令: /${cmd.id}`);
+        logger.debug(`Injected command: /${cmd.id}`);
       } catch (error) {
-        logger.error(`注入命令 ${cmd.id} 失败:`, error);
+        logger.error(`Failed to inject command ${cmd.id}:`, error);
       }
     }
   }
 
   /**
-   * 注入插件 Skills
+   * Inject plugin Skills
    */
   private async injectSkills(
     pluginName: string,
@@ -183,15 +183,15 @@ export class PluginManager {
 
         await fs.ensureDir(path.dirname(destPath));
         await fs.copy(sourcePath, destPath);
-        logger.debug(`注入 Skill: ${skill.id}`);
+        logger.debug(`Injected Skill: ${skill.id}`);
       } catch (error) {
-        logger.error(`注入 Skill ${skill.id} 失败:`, error);
+        logger.error(`Failed to inject Skill ${skill.id}:`, error);
       }
     }
   }
 
   /**
-   * 列出所有已安装的插件
+   * List all installed plugins
    */
   async listPlugins(): Promise<PluginConfig[]> {
     const plugins = await this.scanPlugins();
@@ -209,59 +209,58 @@ export class PluginManager {
   }
 
   /**
-   * 安装插件
+   * Install a plugin
    */
   async installPlugin(pluginName: string, source?: string): Promise<void> {
     try {
-      logger.info(`安装插件: ${pluginName}`);
+      logger.info(`Installing plugin: ${pluginName}`);
 
       if (source) {
         const destPath = path.join(this.pluginsDir, pluginName);
         await fs.copy(source, destPath);
       } else {
-        logger.warn('远程安装功能尚未实现');
+        logger.warn('Remote installation not implemented yet');
         return;
       }
 
       await this.loadPlugin(pluginName);
-      logger.success(`插件 ${pluginName} 安装成功`);
+      logger.success(`Plugin ${pluginName} installed successfully`);
     } catch (error) {
-      logger.error(`安装插件 ${pluginName} 失败:`, error);
+      logger.error(`Failed to install plugin ${pluginName}:`, error);
       throw error;
     }
   }
 
   /**
-   * 移除插件
+   * Remove a plugin
    */
   async removePlugin(pluginName: string): Promise<void> {
     try {
-      logger.info(`移除插件: ${pluginName}`);
+      logger.info(`Removing plugin: ${pluginName}`);
 
-      // 删除插件目录
+      // Delete plugin directory
       const pluginPath = path.join(this.pluginsDir, pluginName);
       await fs.remove(pluginPath);
 
-      // 删除注入的命令
+      // Delete injected commands
       if (await fs.pathExists(this.commandsDir)) {
         const commandFiles = await fs.readdir(this.commandsDir);
         for (const file of commandFiles) {
-          // 这里简化处理，实际应该读取插件配置来确定要删除的文件
-          // 暂时跳过，因为我们需要知道哪些命令属于这个插件
+          // Simplified handling here; ideally, read plugin config to determine files to delete
+          // Skipping for now as we need to know which commands belong to this plugin
         }
       }
 
-      // 删除注入的 Skills
+      // Delete injected Skills
       const pluginSkillsDir = path.join(this.skillsDir, pluginName);
       if (await fs.pathExists(pluginSkillsDir)) {
         await fs.remove(pluginSkillsDir);
       }
 
-      logger.success(`插件 ${pluginName} 移除成功`);
+      logger.success(`Plugin ${pluginName} removed successfully`);
     } catch (error) {
-      logger.error(`移除插件 ${pluginName} 失败:`, error);
+      logger.error(`Failed to remove plugin ${pluginName}:`, error);
       throw error;
     }
   }
 }
-

@@ -1,5 +1,5 @@
 ---
-description: 将创作计划分解为可执行的任务清单
+description: Breakdown creative plan into executable task list
 allowed-tools: Read(//stories/**/creative-plan.md), Read(stories/**/creative-plan.md), Read(//stories/**/specification.md), Read(stories/**/specification.md), Write(//stories/**/tasks.md), Write(stories/**/tasks.md), Bash(find:*), Bash(*)
 model: claude-sonnet-4-5-20250929
 scripts:
@@ -7,117 +7,117 @@ scripts:
   ps: .specify/scripts/powershell/generate-tasks.ps1
 ---
 
-基于创作计划生成具体的、可执行的任务列表。
+Generate specific, executable task list based on creative plan.
 
-## 目标
+## Goal
 
-将宏观计划转化为微观任务，让创作变得可管理、可追踪。
+Transform macro plan into micro tasks, making creation manageable and trackable.
 
-## 执行步骤
+## Execution Steps
 
-### 1. 加载计划文档
+### 1. Load Plan Documents
 
-运行 `{SCRIPT}` 加载：
-- 创作计划：`stories/*/creative-plan.md`
-- 章节架构信息
-- 时间线和依赖关系
+Run `{SCRIPT}` to load:
+- Creative Plan: `stories/*/creative-plan.md`
+- Chapter Architecture Info
+- Timeline and Dependencies
 
-### 2. 生成任务列表
+### 2. Generate Task List
 
-创建 `stories/*/tasks.md`，包含：
+Create `stories/*/tasks.md`, containing:
 
-#### 核心写作任务
+#### Core Writing Tasks
 
-**重要**：从specification.md第五章和creative-plan.md的线索分布，为每个写作任务标注涉及线索。
-
-```markdown
-## 写作任务
-
-### 高优先级 [必须首先完成]
-
-- [ ] [P0] **T001** - 第1章：[章节标题] (目标字数)
-  - **核心任务**：[本章的主要任务]
-  - **关键情节**：[具体情节点]
-  - **涉及线索**：
-    - PL-XX([线索名称]) ⭐⭐⭐ 主推进
-    - PL-YY([线索名称]) ⭐ 背景
-  - **交汇点**：[如适用] X-001([交汇点描述])
-  - **伏笔埋设/揭晓**：[如适用] F-001埋设 / F-002揭晓
-  - **必须包含**：[关键元素列表]
-  - **章末钩子**：[悬念设置]
-  - **依赖**：无
-  - **输出**：`content/volume1/chapter-001.md`
-
-- [ ] [P0] **T002** - 角色档案：主角详细设定
-  - **核心任务**：完善主角设定
-  - **必须包含**：性格、背景、能力、欲望、恐惧、成长弧线
-  - **依赖**：无
-  - **输出**：`characters/protagonist.md`
-
-### 中优先级 [正常推进]
-
-- [ ] [P1] **T005** - 第5章：[章节标题] (目标字数)
-  - **核心任务**：[本章主要任务]
-  - **关键情节**：[具体情节]
-  - **涉及线索**：
-    - PL-01([线索名]) ⭐⭐⭐ 主推进
-    - PL-02([线索名]) ⭐⭐ 辅助
-  - **交汇点**：无
-  - **伏笔埋设/揭晓**：F-001埋设([伏笔内容])
-  - **必须包含**：[关键元素]
-  - **章末钩子**：[悬念]
-  - **依赖**：T004(第4章)
-  - **输出**：`content/volume1/chapter-005.md`
-
-### 低优先级 [可选完善]
-
-- [ ] [P2] 番外：角色前传
-- [ ] [P2] 设定集：详细世界观
-```
-
-**任务字段说明**：
-- **涉及线索**：从creative-plan.md的"活跃线索"列读取，标明本章推进哪些线索
-- **交汇点**：从specification.md 5.3节读取，标明本章是否为交汇点
-- **伏笔埋设/揭晓**：从specification.md 5.4节读取，标明本章涉及的伏笔操作
-
-#### 任务标记说明
-- `[P]` - 可并行执行
-- `[依赖:X]` - 需要先完成任务X
-- `[P0/P1/P2]` - 优先级标记
-
-### 3. 任务排序和分组
-
-- 按优先级分组
-- 识别依赖关系
-- 标记可并行任务
-- 估算完成时间
-
-### 4. 生成执行计划
+**Important**: Mark involved clues for each writing task based on clue distribution in specification.md Chapter 5 and creative-plan.md.
 
 ```markdown
-## 执行计划
+## Writing Tasks
 
-### 第一阶段（第1周）
-并行任务组1：
-- 主角设定 [P]
-- 世界观基础 [P]
-- 第1章草稿 [P]
+### High Priority [Must Complete First]
 
-### 第二阶段（第2-3周）
-串行任务：
-- 第2章 [依赖:第1章]
-- 第3章 [依赖:第2章]
+- [ ] [P0] **T001** - Chapter 1: [Chapter Title] (Target Words)
+  - **Core Task**: [Main task of this chapter]
+  - **Key Plot**: [Specific plot points]
+  - **Involved Clues**:
+    - PL-XX([Clue Name]) ⭐⭐⭐ Main Push
+    - PL-YY([Clue Name]) ⭐ Background
+  - **Intersection**: [If applicable] X-001([Intersection Description])
+  - **Foreshadowing**: [If applicable] F-001 Plant / F-002 Reveal
+  - **Must Include**: [Key element list]
+  - **Ending Hook**: [Suspense setup]
+  - **Dependencies**: None
+  - **Output**: `content/volume1/chapter-001.md`
 
-并行任务组2：
-- 配角设定 [P]
-- 场景设计 [P]
+- [ ] [P0] **T002** - Character Profile: Protagonist Detailed Setting
+  - **Core Task**: Perfect protagonist setting
+  - **Must Include**: Personality, background, ability, desire, fear, growth arc
+  - **Dependencies**: None
+  - **Output**: `characters/protagonist.md`
+
+### Medium Priority [Normal Progress]
+
+- [ ] [P1] **T005** - Chapter 5: [Chapter Title] (Target Words)
+  - **Core Task**: [Main task of this chapter]
+  - **Key Plot**: [Specific plot]
+  - **Involved Clues**:
+    - PL-01([Clue Name]) ⭐⭐⭐ Main Push
+    - PL-02([Clue Name]) ⭐⭐ Auxiliary
+  - **Intersection**: None
+  - **Foreshadowing**: F-001 Plant ([Content])
+  - **Must Include**: [Key elements]
+  - **Ending Hook**: [Suspense]
+  - **Dependencies**: T004(Chapter 4)
+  - **Output**: `content/volume1/chapter-005.md`
+
+### Low Priority [Optional Perfection]
+
+- [ ] [P2] Extra: Character Prequel
+- [ ] [P2] Setting Collection: Detailed World Building
 ```
 
-### 5. 输出任务统计
+**Task Field Description**:
+- **Involved Clues**: Read from "Active Clues" column in creative-plan.md, indicating which clues this chapter pushes forward
+- **Intersection**: Read from specification.md Section 5.3, indicating if this chapter is an intersection point
+- **Foreshadowing**: Read from specification.md Section 5.4, indicating foreshadowing operations in this chapter
 
-- 总任务数
-- 预计总字数
-- 预计完成时间
-- 关键里程碑
+#### Task Marker Description
+- `[P]` - Can execute in parallel
+- `[Dep:X]` - Need to complete Task X first
+- `[P0/P1/P2]` - Priority marker
 
-提示下一步：开始执行 `/write` 或查看特定任务详情。
+### 3. Task Sorting and Grouping
+
+- Group by priority
+- Identify dependencies
+- Mark parallel tasks
+- Estimate completion time
+
+### 4. Generate Execution Plan
+
+```markdown
+## Execution Plan
+
+### Phase 1 (Week 1)
+Parallel Task Group 1:
+- Protagonist Setting [P]
+- World Building Foundation [P]
+- Chapter 1 Draft [P]
+
+### Phase 2 (Week 2-3)
+Serial Tasks:
+- Chapter 2 [Dep: Chapter 1]
+- Chapter 3 [Dep: Chapter 2]
+
+Parallel Task Group 2:
+- Supporting Role Setting [P]
+- Scene Design [P]
+```
+
+### 5. Output Task Statistics
+
+- Total Tasks
+- Estimated Total Words
+- Estimated Completion Time
+- Key Milestones
+
+Prompt next step: Start executing `/write` or view specific task details.

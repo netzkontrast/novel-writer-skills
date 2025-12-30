@@ -1,6 +1,6 @@
 ---
-description: 通过针对性问答澄清故事大纲中的模糊点，确保创作方向明确，支持焦点参数
-argument-hint: [关键词或焦点领域]
+description: Clarify ambiguities in the story outline through targeted Q&A, ensuring clear creative direction, supports focus parameter
+argument-hint: [keywords or focus area]
 allowed-tools: Read(//stories/**), Read(stories/**), Read(//plugins/**), Read(plugins/**), Write(//stories/*/story.md), Write(stories/*/story.md), Bash(ls:*), Bash(find:*), Bash(*)
 model: claude-sonnet-4-5-20250929
 disable-model-invocation: false
@@ -9,229 +9,229 @@ scripts:
   ps: .specify/scripts/powershell/clarify-story.ps1 -Json -PathsOnly
 ---
 
-焦点区域（可选）：$ARGUMENTS
+Focus Area (Optional): $ARGUMENTS
 ---
 
-## 目标
+## Goal
 
-检测并减少故事大纲中的歧义或缺失的决策点，通过交互式问答收集澄清信息，并将结果记录在故事文件中。
+Detect and reduce ambiguities or missing decision points in the story outline, collect clarification information through interactive Q&A, and record results in story files.
 
-**注意**：此澄清流程应在 `/plan` 之前运行并完成。如果用户明确表示跳过澄清（例如，探索性创作），可以继续，但必须警告下游返工风险会增加。
+**Note**: This clarification process should run and complete before `/plan`. If the user explicitly indicates skipping clarification (e.g., exploratory writing), you may proceed, but must warn of increased rework risk downstream.
 
-## 执行步骤
+## Execution Steps
 
-### 1. 初始化检查
+### 1. Initialization Check
 
-运行 `{SCRIPT}` 获取当前故事路径：
-- 解析 JSON 获取 `STORY_PATH` 和 `STORY_NAME`
-- 如果没有找到故事文件，提示用户先运行 `/story` 创建故事大纲
-- 加载故事文件内容进行分析
+Run `{SCRIPT}` to get current story path:
+- Parse JSON to get `STORY_PATH` and `STORY_NAME`
+- If no story file found, prompt user to run `/story` first to create story outline
+- Load story file content for analysis
 
 <!-- PLUGIN_HOOK: genre-knowledge-clarify -->
-<!-- 插件增强区：类型识别
-     如果你安装了 genre-knowledge 插件，请在此处插入类型识别增强提示词
-     参考：plugins/genre-knowledge/README.md 的"2.1 增强 /clarify 命令"章节
+<!-- Plugin Enhancement Area: Genre Recognition
+     If you installed genre-knowledge plugin, insert genre recognition enhancement prompts here
+     Ref: "2.1 Enhance /clarify command" in plugins/genre-knowledge/README.md
 -->
 
-### 2. 结构化歧义扫描
+### 2. Structured Ambiguity Scan
 
-对故事大纲进行全面扫描，评估每个类别的清晰度（清晰/部分清晰/缺失）：
+Scan story outline comprehensively, assessing clarity of each category (Clear/Partially Clear/Missing):
 
-**创作定位**
-- 目标读者群体（年龄段、性别倾向、阅读层次）
-- 作品定位（商业爽文/严肃文学/类型小说）
-- 预期规模（短篇3-5万/中篇10-20万/长篇50万+）
+**Creative Positioning**
+- Target Audience (Age group, gender preference, reading level)
+- Work Positioning (Commercial page-turner/Serious literature/Genre fiction)
+- Expected Scale (Short 30-50k/Novella 100-200k/Novel 500k+)
 
-**世界观设定**
-- 时代背景精确度（具体年份/朝代/架空程度）
-- 世界规则（魔法体系/科技水平/社会制度）
-- 地理范围（单一城市/多国/大陆/星际）
+**World Building**
+- Era Background Precision (Specific year/Dynasty/Fictional degree)
+- World Rules (Magic system/Tech level/Social system)
+- Geographical Scope (Single city/Multi-country/Continent/Interstellar)
 
-**角色设计**
-- 主角成长曲线（废柴逆袭/天才型/稳扎稳打）
-- 主角性格基调（热血/冷静/腹黑/圣母）
-- 配角功能定位（推动剧情/情感支撑/对比反衬）
-- 反派智商设定（降智反派/势均力敌/高维碾压）
+**Character Design**
+- Protagonist Growth Curve (Zero to Hero/Genius/Steady)
+- Protagonist Personality Tone (Hot-blooded/Calm/Machiavellian/Saintly)
+- Supporting Role Positioning (Plot driver/Emotional support/Contrast)
+- Antagonist IQ Setting (Dumb villain/Even match/High-dimensional crush)
 
-**叙事策略**
-- 视角选择（第一人称/第三人称限定/上帝视角）
-- 时间线结构（线性叙事/倒叙插叙/多线并行）
-- 叙事节奏（快节奏爽文/慢热铺垫/张弛有度）
+**Narrative Strategy**
+- Perspective Choice (First person/Third person limited/Omniscient)
+- Timeline Structure (Linear/Flashback/Multi-line parallel)
+- Narrative Pacing (Fast-paced/Slow burn/Balanced tension)
 
-**情节核心**
-- 核心冲突类型（人vs人/人vs自然/人vs社会/人vs自我）
-- 主线目标明确度（复仇/成长/拯救/探索）
-- 结局倾向（大团圆/悲剧/开放式）
+**Core Plot**
+- Core Conflict Type (Man vs Man/Nature/Society/Self)
+- Main Goal Clarity (Revenge/Growth/Rescue/Exploration)
+- Ending Inclination (Happy Ending/Tragedy/Open)
 
-**风格基调**
-- 文风选择（白话流畅/古风典雅/幽默诙谐/冷峻写实）
-- 描写侧重（动作场面/心理描写/环境氛围/对话推进）
-- 情感基调（热血激昂/压抑黑暗/温馨治愈/虐心催泪）
+**Style Tone**
+- Writing Style (Vernacular fluent/Classical elegant/Humorous/Cold realistic)
+- Description Focus (Action scenes/Psychological description/Atmosphere/Dialogue driven)
+- Emotional Tone (Inspiring/Depressive dark/Warm healing/Heart-wrenching)
 
-**创作约束**
-- 敏感内容处理（violence程度/情感尺度）
-- 价值观导向（正能量/现实主义/批判性）
-- 更新计划（日更/周更/月更）
+**Creative Constraints**
+- Sensitive Content Handling (Violence level/Emotional scale)
+- Value Orientation (Positive energy/Realism/Critical)
+- Update Plan (Daily/Weekly/Monthly)
 
-对每个"部分清晰"或"缺失"的类别生成候选问题，除非：
-- 澄清不会实质影响创作方向
-- 信息更适合在章节规划阶段确定
+Generate candidate questions for each "Partially Clear" or "Missing" category, unless:
+- Clarification won't substantially affect creative direction
+- Information is better determined during chapter planning stage
 
-### 3. 生成优先问题队列
+### 3. Generate Priority Question Queue
 
-内部生成最多5个优先澄清问题，应用以下约束：
-- 整个会话最多5个问题
-- 每个问题必须可以通过以下方式之一回答：
-  * 多选题（2-5个互斥选项）
-  * 简答题（限制5个词以内）
-- 只包含对创作方向有实质影响的问题
-- 确保类别覆盖平衡，优先高影响领域
-- 如果超过5个类别需要澄清，选择（影响力×不确定性）最高的5个
+Internally generate up to 5 priority clarification questions, applying constraints:
+- Max 5 questions for entire session
+- Each question must be answerable via one of:
+  * Multiple Choice (2-5 mutually exclusive options)
+  * Short Answer (Limit 5 words)
+- Only include questions with substantial impact on creative direction
+- Ensure balanced category coverage, prioritize high-impact areas
+- If >5 categories need clarification, choose top 5 by (Impact × Uncertainty)
 
-### 3.5 问题设计原则（对话式理解）
+### 3.5 Question Design Principles (Conversational Understanding)
 
-每个问题应当**像真人写手在交流**，而不是工程师在填表。
+Each question should be **like a human writer communicating**, not an engineer filling a form.
 
-**核心原则**：
-- ✅ **先说观察，再问问题**：让作者明白"为什么要问这个"
-- ✅ **说人话**：用创作者的语言，而不是分类学术语
-- ✅ **指出影响**：让作者理解这个决策会影响什么
-- ❌ **避免直接抛问题**：不要一上来就"请问你的目标读者是？"
+**Core Principles**:
+- ✅ **State observation first, then ask**: Let author know "why ask this"
+- ✅ **Speak human**: Use creator language, not taxonomy terms
+- ✅ **Point out impact**: Let author understand what this decision affects
+- ❌ **Avoid direct questioning**: Don't just ask "What is your target audience?"
 
-**对比示例**：
+**Contrast Example**:
 
-❌ **工程化提问**（避免）：
+❌ **Engineering Question** (Avoid):
 ```
-问题1：你的目标读者是什么年龄段？
-A. 18-25岁  B. 26-35岁  C. 36-45岁
+Question 1: What age group is your target audience?
+A. 18-25  B. 26-35  C. 36-45
 ```
 
-✅ **对话式提问**（推荐）：
+✅ **Conversational Question** (Recommended):
 ```
-💬 我注意到你的故事有校园元素，但也有职场内容。这两个场景对应的读者群体差异很大——
-校园读者喜欢热血成长，职场读者更关注权谋博弈。这会直接影响我们的节奏设计和价值观表达。
+💬 I noticed your story has campus elements but also workplace content. These two scenes appeal to very different reader groups—
+Campus readers like hot-blooded growth, workplace readers focus on power struggles. This directly affects our pacing design and value expression.
 
-所以想先确认：**你主要想写给谁看？**
+So I want to confirm first: **Who do you mainly want to write for?**
 
-| 选项 | 说明 |
+| Option | Description |
 |------|------|
-| A | 学生群体（18-25岁）- 侧重成长和理想主义 |
-| B | 职场人士（26-35岁）- 侧重现实和策略思维 |
-| C | 通吃（调整为双线叙事，兼顾两者）|
-| D | 自定义（请输入你的想法）|
+| A | Student Group (18-25) - Focus on growth and idealism |
+| B | Professionals (26-35) - Focus on reality and strategic thinking |
+| C | Both (Adjust to dual-line narrative, balancing both) |
+| D | Custom (Please input your idea) |
 ```
 
-**提问结构模板**：
+**Question Structure Template**:
 ```markdown
-💬 [观察到的现象/矛盾点]。[这会影响什么创作决策]。
+💬 [Observed phenomenon/contradiction]. [What creative decision this affects].
 
-所以想确认：**[核心问题]**
+So I want to confirm: **[Core Question]**
 
-[选项表格或简答提示]
+[Option Table or Short Answer Hint]
 ```
 
-### 4. 顺序问答循环
+### 4. Sequential Q&A Loop
 
-**一次展示一个问题**，按照对话式格式提问。
+**Display one question at a time**, using conversational format.
 
-多选题格式（必须包含问题背景）：
+Multiple Choice Format (Must include question context):
 ```markdown
-💬 [问题背景说明：你观察到了什么？这会影响什么？]
+💬 [Question Context: What did you observe? What does this affect?]
 
-所以想确认：**[核心问题]**
+So I want to confirm: **[Core Question]**
 
-| 选项 | 说明 |
+| Option | Description |
 |------|------|
-| A | 选项A的详细说明 |
-| B | 选项B的详细说明 |
-| C | 选项C的详细说明 |
-| D | 选项D的详细说明 |
-| E | 选项E的详细说明（可选）|
-| F | 自定义（请输入你的想法）|
+| A | Detailed description of Option A |
+| B | Detailed description of Option B |
+| C | Detailed description of Option C |
+| D | Detailed description of Option D |
+| E | Detailed description of Option E (Optional) |
+| F | Custom (Please input your idea) |
 ```
 
-简答题格式（必须包含问题背景）：
+Short Answer Format (Must include question context):
 ```markdown
-💬 [问题背景说明：你观察到了什么？这会影响什么？]
+💬 [Question Context: What did you observe? What does this affect?]
 
-所以想确认：**[核心问题]**
+So I want to confirm: **[Core Question]**
 
-请简要回答（5个词以内）：_______
+Please answer briefly (within 5 words): _______
 ```
 
-**处理用户回答**
-- 验证答案有效性
-- 如选择 F（自定义），接收并记录用户输入的自定义内容
-- 如有歧义，请求快速澄清
-- 记录答案并继续下一个问题
+**Handle User Answer**
+- Verify answer validity
+- If F (Custom) selected, receive and record user's custom input
+- If ambiguous, request quick clarification
+- Record answer and proceed to next question
 
-**停止条件**
-- 所有关键歧义已解决
-- 用户示意完成（"好了"、"够了"、"不用了"）
-- 已达到5个问题上限
+**Stop Conditions**
+- All key ambiguities resolved
+- User signals completion ("Done", "Enough", "Stop")
+- Reached 5 question limit
 
-### 5. 整合澄清结果
+### 5. Consolidate Clarification Results
 
-每个接受的答案后立即：
+Immediately after each accepted answer:
 
-**首次整合时**
-- 在故事大纲中创建 `## 澄清记录` 章节（如不存在）
-- 添加 `### 澄清会话 [日期]` 子标题
+**First Consolidation**
+- Create `## Clarification Log` section in story outline (if not exists)
+- Add `### Clarification Session [Date]` sub-header
 
-**记录格式**
+**Record Format**
 ```markdown
-- 问：[问题内容] → 答：[用户答案]
+- Q: [Question Content] → A: [User Answer]
 ```
 
-**更新相关章节**
-根据澄清内容更新故事大纲的对应部分：
-- 创作定位 → 更新故事概述
-- 世界观 → 更新世界观设定
-- 角色 → 更新角色设定
-- 叙事策略 → 添加到创作说明
-- 风格基调 → 添加到风格指南
+**Update Related Sections**
+Update corresponding parts of story outline based on clarification:
+- Creative Positioning → Update Story Overview
+- World Building → Update World Settings
+- Characters → Update Character Settings
+- Narrative Strategy → Add to Creative Instructions
+- Style Tone → Add to Style Guide
 
-### 6. 验证与保存
+### 6. Verify and Save
 
-每次更新后验证：
-- 澄清记录完整性
-- 没有遗留的模糊标记被新答案解决
-- 没有矛盾的陈述
-- Markdown 格式正确
+Verify after each update:
+- Clarification log completeness
+- No remaining ambiguous markers resolved by new answers
+- No contradictory statements
+- Correct Markdown format
 
-将更新后的内容写回故事文件。
+Write updated content back to story file.
 
-### 7. 完成报告
+### 7. Completion Report
 
-报告包含：
-- 提问和回答的问题数量
-- 更新的故事文件路径
-- 触及的章节列表
-- 覆盖率总结表：
+Report includes:
+- Number of questions asked and answered
+- Updated story file path
+- List of touched sections
+- Coverage summary table:
 
-| 类别 | 状态 |
+| Category | Status |
 |------|------|
-| 创作定位 | ✅ 已澄清 |
-| 世界观设定 | ✅ 已澄清 |
-| 角色设计 | ⏸ 延迟到规划 |
+| Creative Positioning | ✅ Clarified |
+| World Building | ✅ Clarified |
+| Character Design | ⏸ Delayed to Plan |
 | ... | ... |
 
-- 建议的下一步命令（通常是 `/plan`）
+- Suggested next command (Usually `/plan`)
 
-## 行为规则
+## Behavioral Rules
 
-- 如果没有发现有意义的歧义，回应："未检测到需要立即澄清的关键歧义。"
-- 如果故事文件缺失，指导用户先运行 `/story`
-- 不超过5个问题的总限制
-- 避免询问纯技术写作细节
-- 尊重用户的提前终止信号
-- 如果未提问就达到完全覆盖，输出简洁的覆盖总结
+- If no meaningful ambiguity found, respond: "No key ambiguities requiring immediate clarification detected."
+- If story file missing, guide user to run `/story` first
+- Do not exceed 5 questions total limit
+- Avoid asking pure technical writing details
+- Respect user's early termination signal
+- If full coverage reached without questions, output concise coverage summary
 
-## 小说创作特定考虑
+## Novel Creation Specific Considerations
 
-- **类型适配**：根据故事类型（爽文/悬疑/言情/严肃文学等）加载对应知识库，提供针对性问题
-- **读者导向**：商业作品vs文学作品的不同标准和侧重点
-- **文化敏感**：某些题材需要特别谨慎处理
-- **系列规划**：是否为系列作品会影响整体架构和决策
+- **Genre Adaptation**: Load corresponding knowledge base based on story genre (Page-turner/Mystery/Romance/Serious Lit, etc.), provide targeted questions
+- **Reader Orientation**: Different standards and focus for commercial vs literary works
+- **Cultural Sensitivity**: Some subjects require careful handling
+- **Series Planning**: Whether it's a series affects overall architecture and decisions
 
-优先级上下文：{ARGS}
+Priority Context: {ARGS}

@@ -16,12 +16,12 @@ const __dirname = path.dirname(__filename);
 
 const program = new Command();
 
-// 显示欢迎横幅
+// Display welcome banner
 function displayBanner(): void {
   const banner = `
 ╔═══════════════════════════════════════╗
 ║  📚  Novel Writer Skills  📝          ║
-║  Claude Code 专用小说创作工具        ║
+║  Novel Writing Tool for Claude Code   ║
 ╚═══════════════════════════════════════╝
 `;
   console.log(chalk.cyan(banner));
@@ -32,41 +32,41 @@ displayBanner();
 
 program
   .name('novelwrite')
-  .description(chalk.cyan('Novel Writer Skills - Claude Code 专用小说创作工具'))
-  .version(getVersion(), '-v, --version', '显示版本号')
-  .helpOption('-h, --help', '显示帮助信息');
+  .description(chalk.cyan('Novel Writer Skills - Novel Writing Tool for Claude Code'))
+  .version(getVersion(), '-v, --version', 'Display version number')
+  .helpOption('-h, --help', 'Display help information');
 
-// init 命令 - 初始化小说项目
+// init command - Initialize a novel project
 program
   .command('init')
-  .argument('[name]', '小说项目名称')
-  .option('--here', '在当前目录初始化')
-  .option('--plugins <names>', '预装插件，逗号分隔')
-  .option('--no-git', '跳过 Git 初始化')
-  .description('初始化一个新的小说项目')
+  .argument('[name]', 'Novel project name')
+  .option('--here', 'Initialize in the current directory')
+  .option('--plugins <names>', 'Pre-install plugins, comma-separated')
+  .option('--no-git', 'Skip Git initialization')
+  .description('Initialize a new novel project')
   .action(async (name, options) => {
-    const spinner = ora('正在初始化小说项目...').start();
+    const spinner = ora('Initializing novel project...').start();
 
     try {
-      // 确定项目路径
+      // Determine project path
       let projectPath: string;
       if (options.here) {
         projectPath = process.cwd();
         name = path.basename(projectPath);
       } else {
         if (!name) {
-          spinner.fail('请提供项目名称或使用 --here 参数');
+          spinner.fail('Please provide a project name or use the --here argument');
           process.exit(1);
         }
         projectPath = path.join(process.cwd(), name);
         if (await fs.pathExists(projectPath)) {
-          spinner.fail(`项目目录 "${name}" 已存在`);
+          spinner.fail(`Project directory "${name}" already exists`);
           process.exit(1);
         }
         await fs.ensureDir(projectPath);
       }
 
-      // 创建基础项目结构
+      // Create basic project structure
       const baseDirs = [
         '.specify',
         '.specify/memory',
@@ -84,7 +84,7 @@ program
         await fs.ensureDir(path.join(projectPath, dir));
       }
 
-      // 创建基础配置文件
+      // Create basic configuration file
       const config = {
         name,
         type: 'novel',
@@ -95,64 +95,64 @@ program
 
       await fs.writeJson(path.join(projectPath, '.specify', 'config.json'), config, { spaces: 2 });
 
-      // 从 novel-writer-skills 包复制模板文件
+      // Copy template files from novel-writer-skills package
       const packageRoot = path.resolve(__dirname, '..');
 
-      // 复制命令文件
+      // Copy command files
       const commandsSource = path.join(packageRoot, 'templates', 'commands');
       const commandsDest = path.join(projectPath, '.claude', 'commands');
       if (await fs.pathExists(commandsSource)) {
         await fs.copy(commandsSource, commandsDest);
-        spinner.text = '已安装 Slash Commands...';
+        spinner.text = 'Slash Commands installed...';
       }
 
-      // 复制 Skills 文件
+      // Copy Skills files
       const skillsSource = path.join(packageRoot, 'templates', 'skills');
       const skillsDest = path.join(projectPath, '.claude', 'skills');
       if (await fs.pathExists(skillsSource)) {
         await fs.copy(skillsSource, skillsDest);
-        spinner.text = '已安装 Agent Skills...';
+        spinner.text = 'Agent Skills installed...';
       }
 
-      // 复制模板文件到 .specify/templates
+      // Copy template files to .specify/templates
       const fullTemplatesDir = path.join(packageRoot, 'templates');
       if (await fs.pathExists(fullTemplatesDir)) {
         const userTemplatesDir = path.join(projectPath, '.specify', 'templates');
         await fs.copy(fullTemplatesDir, userTemplatesDir, { overwrite: false });
       }
 
-      // 复制 memory 文件
+      // Copy memory files
       const memoryDir = path.join(packageRoot, 'templates', 'memory');
       if (await fs.pathExists(memoryDir)) {
         const userMemoryDir = path.join(projectPath, '.specify', 'memory');
         await fs.copy(memoryDir, userMemoryDir);
       }
 
-      // 复制追踪文件模板
+      // Copy tracking template files
       const trackingTemplatesDir = path.join(packageRoot, 'templates', 'tracking');
       if (await fs.pathExists(trackingTemplatesDir)) {
         const userTrackingDir = path.join(projectPath, 'spec', 'tracking');
         await fs.copy(trackingTemplatesDir, userTrackingDir);
       }
 
-      // 复制知识库模板（项目特定）
+      // Copy knowledge base templates (project specific)
       const knowledgeTemplatesDir = path.join(packageRoot, 'templates', 'knowledge');
       if (await fs.pathExists(knowledgeTemplatesDir)) {
         const userKnowledgeDir = path.join(projectPath, 'spec', 'knowledge');
         await fs.copy(knowledgeTemplatesDir, userKnowledgeDir);
       }
 
-      // 复制通用知识库系统（v1.0新增）
+      // Copy general knowledge base system (new in v1.0)
       const knowledgeBaseDir = path.join(packageRoot, 'templates', 'knowledge-base');
       if (await fs.pathExists(knowledgeBaseDir)) {
         const claudeKnowledgeBaseDir = path.join(projectPath, '.claude', 'knowledge-base');
         await fs.copy(knowledgeBaseDir, claudeKnowledgeBaseDir);
-        spinner.text = '已安装知识库系统...';
+        spinner.text = 'Knowledge base system installed...';
       }
 
-      // 如果指定了 --plugins，安装插件
+      // If --plugins is specified, install plugins
       if (options.plugins) {
-        spinner.text = '安装插件...';
+        spinner.text = 'Installing plugins...';
         const pluginNames = options.plugins.split(',').map((p: string) => p.trim());
         const pluginManager = new PluginManager(projectPath);
 
@@ -161,83 +161,83 @@ program
           if (await fs.pathExists(builtinPluginPath)) {
             await pluginManager.installPlugin(pluginName, builtinPluginPath);
           } else {
-            console.log(chalk.yellow(`\n警告: 插件 "${pluginName}" 未找到`));
+            console.log(chalk.yellow(`\nWarning: Plugin "${pluginName}" not found`));
           }
         }
       }
 
-      // Git 初始化
+      // Git initialization
       if (options.git !== false) {
         try {
           execSync('git init', { cwd: projectPath, stdio: 'ignore' });
 
-          const gitignore = `# 临时文件
+          const gitignore = `# Temporary files
 *.tmp
 *.swp
 .DS_Store
 
-# 编辑器配置
+# Editor configuration
 .vscode/
 .idea/
 
-# AI 缓存
+# AI cache
 .ai-cache/
 
-# 节点模块
+# Node modules
 node_modules/
 `;
           await fs.writeFile(path.join(projectPath, '.gitignore'), gitignore);
           execSync('git add .', { cwd: projectPath, stdio: 'ignore' });
-          execSync('git commit -m "初始化小说项目"', { cwd: projectPath, stdio: 'ignore' });
+          execSync('git commit -m "Initialize novel project"', { cwd: projectPath, stdio: 'ignore' });
         } catch {
-          console.log(chalk.yellow('\n提示: Git 初始化失败，但项目已创建成功'));
+          console.log(chalk.yellow('\nHint: Git initialization failed, but project created successfully'));
         }
       }
 
-      spinner.succeed(chalk.green(`小说项目 "${name}" 创建成功！`));
+      spinner.succeed(chalk.green(`Novel project "${name}" created successfully!`));
 
-      // 显示后续步骤
-      console.log('\n' + chalk.cyan('接下来:'));
+      // Show next steps
+      console.log('\n' + chalk.cyan('Next steps:'));
       console.log(chalk.gray('─────────────────────────────'));
 
       if (!options.here) {
-        console.log(`  1. ${chalk.white(`cd ${name}`)} - 进入项目目录`);
+        console.log(`  1. ${chalk.white(`cd ${name}`)} - Enter project directory`);
       }
 
-      console.log(`  2. ${chalk.white('在 Claude Code 中打开项目')}`);
-      console.log(`  3. 使用以下斜杠命令开始创作:`);
+      console.log(`  2. ${chalk.white('Open project in Claude Code')}`);
+      console.log(`  3. Use the following slash commands to start writing:`);
 
-      console.log('\n' + chalk.yellow('     📝 七步方法论:'));
-      console.log(`     ${chalk.cyan('/constitution')} - 创建创作宪法，定义核心原则`);
-      console.log(`     ${chalk.cyan('/specify')}      - 定义故事规格，明确要创造什么`);
-      console.log(`     ${chalk.cyan('/clarify')}      - 澄清关键决策点，明确模糊之处`);
-      console.log(`     ${chalk.cyan('/plan')}         - 制定技术方案，决定如何创作`);
-      console.log(`     ${chalk.cyan('/tasks')}        - 分解执行任务，生成可执行清单`);
-      console.log(`     ${chalk.cyan('/write')}        - AI 辅助写作章节内容`);
-      console.log(`     ${chalk.cyan('/analyze')}      - 综合验证分析，确保质量一致`);
+      console.log('\n' + chalk.yellow('     📝 Seven-Step Methodology:'));
+      console.log(`     ${chalk.cyan('/constitution')} - Create writing constitution, define core principles`);
+      console.log(`     ${chalk.cyan('/specify')}      - Define story specifications, clarify what to create`);
+      console.log(`     ${chalk.cyan('/clarify')}      - Clarify key decisions, resolve ambiguities`);
+      console.log(`     ${chalk.cyan('/plan')}         - Develop technical plan, decide how to create`);
+      console.log(`     ${chalk.cyan('/tasks')}        - Breakdown tasks, generate executable list`);
+      console.log(`     ${chalk.cyan('/write')}        - AI-assisted chapter writing`);
+      console.log(`     ${chalk.cyan('/analyze')}      - Comprehensive validation analysis, ensure quality consistency`);
 
-      console.log('\n' + chalk.yellow('     📊 追踪管理命令:'));
-      console.log(`     ${chalk.cyan('/track-init')}  - 初始化追踪系统`);
-      console.log(`     ${chalk.cyan('/track')}       - 综合追踪更新`);
-      console.log(`     ${chalk.cyan('/plot-check')}  - 检查情节一致性`);
-      console.log(`     ${chalk.cyan('/timeline')}    - 管理故事时间线`);
+      console.log('\n' + chalk.yellow('     📊 Tracking Management Commands:'));
+      console.log(`     ${chalk.cyan('/track-init')}  - Initialize tracking system`);
+      console.log(`     ${chalk.cyan('/track')}       - Comprehensive tracking update`);
+      console.log(`     ${chalk.cyan('/plot-check')}  - Check plot consistency`);
+      console.log(`     ${chalk.cyan('/timeline')}    - Manage story timeline`);
 
-      console.log('\n' + chalk.gray('Agent Skills 会自动激活，无需手动调用'));
-      console.log(chalk.dim('提示: 斜杠命令在 Claude Code 内部使用，不是在终端中'));
+      console.log('\n' + chalk.gray('Agent Skills will activate automatically, no manual invocation needed'));
+      console.log(chalk.dim('Hint: Slash commands are used within Claude Code, not in the terminal'));
 
     } catch (error) {
-      spinner.fail(chalk.red('项目初始化失败'));
+      spinner.fail(chalk.red('Project initialization failed'));
       console.error(error);
       process.exit(1);
     }
   });
 
-// check 命令 - 检查环境
+// check command - Check environment
 program
   .command('check')
-  .description('检查系统环境和 Claude Code')
+  .description('Check system environment and Claude Code')
   .action(() => {
-    console.log(chalk.cyan('检查系统环境...\n'));
+    console.log(chalk.cyan('Checking system environment...\n'));
 
     const checks = [
       { name: 'Node.js', command: 'node --version', installed: false },
@@ -248,55 +248,55 @@ program
       try {
         const version = execSync(check.command, { encoding: 'utf-8' }).trim();
         check.installed = true;
-        console.log(chalk.green('✓') + ` ${check.name} 已安装 (${version})`);
+        console.log(chalk.green('✓') + ` ${check.name} is installed (${version})`);
       } catch {
-        console.log(chalk.yellow('⚠') + ` ${check.name} 未安装`);
+        console.log(chalk.yellow('⚠') + ` ${check.name} is not installed`);
       }
     });
 
-    console.log('\n' + chalk.cyan('Claude Code 检测:'));
-    console.log(chalk.gray('请确保已安装 Claude Code 并可以正常使用'));
-    console.log(chalk.gray('下载地址: https://claude.ai/download'));
+    console.log('\n' + chalk.cyan('Claude Code Detection:'));
+    console.log(chalk.gray('Please ensure Claude Code is installed and working correctly'));
+    console.log(chalk.gray('Download: https://claude.ai/download'));
 
-    console.log('\n' + chalk.green('环境检查完成！'));
+    console.log('\n' + chalk.green('Environment check completed!'));
   });
 
-// plugin 命令 - 插件管理
+// plugin command - Plugin management
 program
   .command('plugin')
-  .description('插件管理 (使用 plugin:list, plugin:add, plugin:remove)')
+  .description('Plugin management (use plugin:list, plugin:add, plugin:remove)')
   .action(() => {
-    console.log(chalk.cyan('\n📦 插件管理命令:\n'));
-    console.log('  novelwrite plugin:list              - 列出已安装的插件');
-    console.log('  novelwrite plugin:add <name>        - 安装插件');
-    console.log('  novelwrite plugin:remove <name>     - 移除插件');
-    console.log('\n' + chalk.gray('可用插件:'));
-    console.log('  authentic-voice   - 真实人声写作插件');
+    console.log(chalk.cyan('\n📦 Plugin Management Commands:\n'));
+    console.log('  novelwrite plugin:list              - List installed plugins');
+    console.log('  novelwrite plugin:add <name>        - Install a plugin');
+    console.log('  novelwrite plugin:remove <name>     - Remove a plugin');
+    console.log('\n' + chalk.gray('Available Plugins:'));
+    console.log('  authentic-voice   - Authentic voice writing plugin');
   });
 
 program
   .command('plugin:list')
-  .description('列出已安装的插件')
+  .description('List installed plugins')
   .action(async () => {
     try {
       const projectPath = await ensureProjectRoot();
       const projectInfo = await getProjectInfo(projectPath);
 
       if (!projectInfo) {
-        console.log(chalk.red('❌ 无法读取项目信息'));
+        console.log(chalk.red('❌ Unable to read project info'));
         process.exit(1);
       }
 
       const pluginManager = new PluginManager(projectPath);
       const plugins = await pluginManager.listPlugins();
 
-      console.log(chalk.cyan('\n📦 已安装的插件\n'));
-      console.log(chalk.gray(`项目: ${path.basename(projectPath)}\n`));
+      console.log(chalk.cyan('\n📦 Installed Plugins\n'));
+      console.log(chalk.gray(`Project: ${path.basename(projectPath)}\n`));
 
       if (plugins.length === 0) {
-        console.log(chalk.yellow('暂无插件'));
-        console.log(chalk.gray('\n使用 "novel-skills plugin:add <name>" 安装插件'));
-        console.log(chalk.gray('可用插件: authentic-voice\n'));
+        console.log(chalk.yellow('No plugins found'));
+        console.log(chalk.gray('\nUse "novel-skills plugin:add <name>" to install a plugin'));
+        console.log(chalk.gray('Available plugins: authentic-voice\n'));
         return;
       }
 
@@ -305,7 +305,7 @@ program
         console.log(chalk.gray(`    ${plugin.description}`));
 
         if (plugin.commands && plugin.commands.length > 0) {
-          console.log(chalk.gray(`    命令: ${plugin.commands.map(c => `/${c.id}`).join(', ')}`));
+          console.log(chalk.gray(`    Commands: ${plugin.commands.map(c => `/${c.id}`).join(', ')}`));
         }
 
         if (plugin.skills && plugin.skills.length > 0) {
@@ -315,56 +315,56 @@ program
       }
     } catch (error: any) {
       if (error.message === 'NOT_IN_PROJECT') {
-        console.log(chalk.red('\n❌ 当前目录不是 novelwrite 项目'));
-        console.log(chalk.gray('   请在项目根目录运行此命令\n'));
+        console.log(chalk.red('\n❌ Current directory is not a novelwrite project'));
+        console.log(chalk.gray('   Please run this command in the project root directory\n'));
         process.exit(1);
       }
 
-      console.error(chalk.red('❌ 列出插件失败:'), error);
+      console.error(chalk.red('❌ Failed to list plugins:'), error);
       process.exit(1);
     }
   });
 
 program
   .command('plugin:add <name>')
-  .description('安装插件')
+  .description('Install a plugin')
   .action(async (name) => {
     try {
       const projectPath = await ensureProjectRoot();
       const projectInfo = await getProjectInfo(projectPath);
 
       if (!projectInfo) {
-        console.log(chalk.red('❌ 无法读取项目信息'));
+        console.log(chalk.red('❌ Unable to read project info'));
         process.exit(1);
       }
 
-      console.log(chalk.cyan('\n📦 NovelWrite 插件安装\n'));
-      console.log(chalk.gray(`项目版本: ${projectInfo.version}\n`));
+      console.log(chalk.cyan('\n📦 NovelWrite Plugin Installation\n'));
+      console.log(chalk.gray(`Project Version: ${projectInfo.version}\n`));
 
       const packageRoot = path.resolve(__dirname, '..');
       const builtinPluginPath = path.join(packageRoot, 'plugins', name);
 
       if (!await fs.pathExists(builtinPluginPath)) {
-        console.log(chalk.red(`❌ 插件 ${name} 未找到\n`));
-        console.log(chalk.gray('可用插件:'));
-        console.log(chalk.gray('  - authentic-voice (真实人声插件)'));
+        console.log(chalk.red(`❌ Plugin ${name} not found\n`));
+        console.log(chalk.gray('Available plugins:'));
+        console.log(chalk.gray('  - authentic-voice (Authentic Voice Plugin)'));
         process.exit(1);
       }
 
-      const spinner = ora('正在安装插件...').start();
+      const spinner = ora('Installing plugin...').start();
       const pluginManager = new PluginManager(projectPath);
 
       await pluginManager.installPlugin(name, builtinPluginPath);
-      spinner.succeed(chalk.green('插件安装成功！\n'));
+      spinner.succeed(chalk.green('Plugin installed successfully!\n'));
 
     } catch (error: any) {
       if (error.message === 'NOT_IN_PROJECT') {
-        console.log(chalk.red('\n❌ 当前目录不是 novelwrite 项目'));
-        console.log(chalk.gray('   请在项目根目录运行此命令\n'));
+        console.log(chalk.red('\n❌ Current directory is not a novelwrite project'));
+        console.log(chalk.gray('   Please run this command in the project root directory\n'));
         process.exit(1);
       }
 
-      console.log(chalk.red('\n❌ 安装插件失败'));
+      console.log(chalk.red('\n❌ Plugin installation failed'));
       console.error(chalk.gray(error.message || error));
       console.log('');
       process.exit(1);
@@ -373,41 +373,41 @@ program
 
 program
   .command('plugin:remove <name>')
-  .description('移除插件')
+  .description('Remove a plugin')
   .action(async (name) => {
     try {
       const projectPath = await ensureProjectRoot();
       const pluginManager = new PluginManager(projectPath);
 
-      console.log(chalk.cyan('\n📦 NovelWrite 插件移除\n'));
-      console.log(chalk.gray(`准备移除插件: ${name}\n`));
+      console.log(chalk.cyan('\n📦 NovelWrite Plugin Removal\n'));
+      console.log(chalk.gray(`Preparing to remove plugin: ${name}\n`));
 
-      const spinner = ora('正在移除插件...').start();
+      const spinner = ora('Removing plugin...').start();
       await pluginManager.removePlugin(name);
-      spinner.succeed(chalk.green('插件移除成功！\n'));
+      spinner.succeed(chalk.green('Plugin removed successfully!\n'));
     } catch (error: any) {
       if (error.message === 'NOT_IN_PROJECT') {
-        console.log(chalk.red('\n❌ 当前目录不是 novelwrite 项目'));
-        console.log(chalk.gray('   请在项目根目录运行此命令\n'));
+        console.log(chalk.red('\n❌ Current directory is not a novelwrite project'));
+        console.log(chalk.gray('   Please run this command in the project root directory\n'));
         process.exit(1);
       }
 
-      console.log(chalk.red('\n❌ 移除插件失败'));
+      console.log(chalk.red('\n❌ Plugin removal failed'));
       console.error(chalk.gray(error.message || error));
       console.log('');
       process.exit(1);
     }
   });
 
-// upgrade 命令 - 升级现有项目
+// upgrade command - Upgrade existing project
 program
   .command('upgrade')
-  .option('--commands', '更新命令文件')
-  .option('--skills', '更新 Skills 文件')
-  .option('--knowledge-base', '更新知识库系统')
-  .option('--all', '更新所有内容')
-  .option('-y, --yes', '跳过确认提示')
-  .description('升级现有项目到最新版本')
+  .option('--commands', 'Update command files')
+  .option('--skills', 'Update Skills files')
+  .option('--knowledge-base', 'Update knowledge base system')
+  .option('--all', 'Update everything')
+  .option('-y, --yes', 'Skip confirmation prompt')
+  .description('Upgrade existing project to the latest version')
   .action(async (options) => {
     const projectPath = process.cwd();
     const packageRoot = path.resolve(__dirname, '..');
@@ -415,16 +415,16 @@ program
     try {
       const configPath = path.join(projectPath, '.specify', 'config.json');
       if (!await fs.pathExists(configPath)) {
-        console.log(chalk.red('❌ 当前目录不是 novel-writer-skills 项目'));
+        console.log(chalk.red('❌ Current directory is not a novel-writer-skills project'));
         process.exit(1);
       }
 
       const config = await fs.readJson(configPath);
-      const projectVersion = config.version || '未知';
+      const projectVersion = config.version || 'unknown';
 
-      console.log(chalk.cyan('\n📦 NovelWrite 项目升级\n'));
-      console.log(chalk.gray(`当前版本: ${projectVersion}`));
-      console.log(chalk.gray(`目标版本: ${getVersion()}\n`));
+      console.log(chalk.cyan('\n📦 NovelWrite Project Upgrade\n'));
+      console.log(chalk.gray(`Current Version: ${projectVersion}`));
+      console.log(chalk.gray(`Target Version: ${getVersion()}\n`));
 
       let updateCommands = options.all || options.commands || false;
       let updateSkills = options.all || options.skills || false;
@@ -442,21 +442,21 @@ program
           {
             type: 'confirm',
             name: 'proceed',
-            message: '确认执行升级?',
+            message: 'Confirm upgrade?',
             default: true
           }
         ]);
 
         if (!answers.proceed) {
-          console.log(chalk.yellow('\n升级已取消'));
+          console.log(chalk.yellow('\nUpgrade canceled'));
           process.exit(0);
         }
       }
 
-      const spinner = ora('正在升级项目...').start();
+      const spinner = ora('Upgrading project...').start();
 
       if (updateCommands) {
-        spinner.text = '更新 Slash Commands...';
+        spinner.text = 'Updating Slash Commands...';
         const commandsSource = path.join(packageRoot, 'templates', 'commands');
         const commandsDest = path.join(projectPath, '.claude', 'commands');
         if (await fs.pathExists(commandsSource)) {
@@ -465,7 +465,7 @@ program
       }
 
       if (updateSkills) {
-        spinner.text = '更新 Agent Skills...';
+        spinner.text = 'Updating Agent Skills...';
         const skillsSource = path.join(packageRoot, 'templates', 'skills');
         const skillsDest = path.join(projectPath, '.claude', 'skills');
         if (await fs.pathExists(skillsSource)) {
@@ -474,7 +474,7 @@ program
       }
 
       if (updateKnowledgeBase) {
-        spinner.text = '更新知识库系统...';
+        spinner.text = 'Updating knowledge base system...';
         const knowledgeBaseSource = path.join(packageRoot, 'templates', 'knowledge-base');
         const knowledgeBaseDest = path.join(projectPath, '.claude', 'knowledge-base');
         if (await fs.pathExists(knowledgeBaseSource)) {
@@ -485,38 +485,37 @@ program
       config.version = getVersion();
       await fs.writeJson(configPath, config, { spaces: 2 });
 
-      spinner.succeed(chalk.green('升级完成！\n'));
+      spinner.succeed(chalk.green('Upgrade completed!\n'));
 
-      console.log(chalk.cyan('✨ 升级内容:'));
-      if (updateCommands) console.log('  • Slash Commands 已更新');
-      if (updateSkills) console.log('  • Agent Skills 已更新');
-      if (updateKnowledgeBase) console.log('  • 知识库系统 已更新（包括 styles/ 和 requirements/）');
-      console.log(`  • 版本号: ${projectVersion} → ${getVersion()}`);
+      console.log(chalk.cyan('✨ Upgrade Details:'));
+      if (updateCommands) console.log('  • Slash Commands updated');
+      if (updateSkills) console.log('  • Agent Skills updated');
+      if (updateKnowledgeBase) console.log('  • Knowledge base system updated (including styles/ and requirements/)');
+      console.log(`  • Version: ${projectVersion} → ${getVersion()}`);
 
     } catch (error) {
-      console.error(chalk.red('\n❌ 升级失败:'), error);
+      console.error(chalk.red('\n❌ Upgrade failed:'), error);
       process.exit(1);
     }
   });
 
-// 自定义帮助信息
+// Custom help information
 program.on('--help', () => {
   console.log('');
-  console.log(chalk.yellow('使用示例:'));
+  console.log(chalk.yellow('Usage Examples:'));
   console.log('');
-  console.log('  $ novelwrite init my-story      # 创建新项目');
-  console.log('  $ novelwrite init --here        # 在当前目录初始化');
-  console.log('  $ novelwrite check              # 检查环境');
-  console.log('  $ novelwrite plugin:list        # 列出插件');
+  console.log('  $ novelwrite init my-story      # Create a new project');
+  console.log('  $ novelwrite init --here        # Initialize in current directory');
+  console.log('  $ novelwrite check              # Check environment');
+  console.log('  $ novelwrite plugin:list        # List plugins');
   console.log('');
-  console.log(chalk.gray('更多信息: https://github.com/wordflowlab/novel-writer-skills'));
+  console.log(chalk.gray('More info: https://github.com/wordflowlab/novel-writer-skills'));
 });
 
-// 解析命令行参数
+// Parse command line arguments
 program.parse(process.argv);
 
-// 如果没有提供任何命令，显示帮助信息
+// If no command provided, display help
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }
-

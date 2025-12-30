@@ -1,7 +1,7 @@
 ---
 name: relations
-description: 管理和追踪角色关系变化
-argument-hint: [update | show | history | check] [角色] [关系] [目标角色]
+description: Manage and track character relationship changes
+argument-hint: [update | show | history | check] [character] [relation] [target_character]
 allowed-tools: Read(//spec/tracking/relationships.json), Read(spec/tracking/relationships.json), Write(//spec/tracking/relationships.json), Write(spec/tracking/relationships.json), Bash(find:*), Bash(*)
 model: claude-sonnet-4-5-20250929
 scripts:
@@ -9,69 +9,69 @@ scripts:
   ps: .specify/scripts/powershell/manage-relations.ps1
 ---
 
-# 角色关系管理
+# Character Relationship Management
 
-追踪和管理角色之间的关系动态，确保关系发展的合理性。
+Track and manage character relationship dynamics, ensuring reasonable relationship development.
 
-## 功能
+## Features
 
-1. **关系网络** - 维护角色之间的关系图谱
-2. **关系变化** - 记录关系的演变历程
-3. **派系管理** - 追踪各势力派系的对立与合作
-4. **情感追踪** - 管理角色间的情感发展
+1. **Relationship Network** - Maintain relationship graph between characters
+2. **Relationship Changes** - Record history of relationship evolution
+3. **Faction Management** - Track opposition and cooperation between factions
+4. **Emotion Tracking** - Manage emotional development between characters
 
-## 使用方法
+## Usage
 
-执行脚本 {SCRIPT} [操作] [参数]：
-- `update` - 更新角色关系
-- `show` - 显示关系网络
-- `history` - 查看关系变化历史
-- `check` - 验证关系逻辑
+Execute script {SCRIPT} [Action] [Parameters]:
+- `update` - Update character relationship
+- `show` - Show relationship network
+- `history` - View relationship change history
+- `check` - Verify relationship logic
 
-示例：
+Example:
 ```
-{SCRIPT} update 李中庸 allies 沈玉卿 --chapter 61 --note 初入翰林相助
+{SCRIPT} update Li_Zhongyong allies Shen_Yuqing --chapter 61 --note Helped when first entering Hanlin
 # PowerShell:
-{SCRIPT} -Command update -A 李中庸 -Relation allies -B 沈玉卿 -Chapter 61 -Note 初入翰林相助
+{SCRIPT} -Command update -A Li_Zhongyong -Relation allies -B Shen_Yuqing -Chapter 61 -Note "Helped when first entering Hanlin"
 ```
 
-## 数据存储
+## Data Storage
 
-关系数据存储在 `spec/tracking/relationships.json`：
+Relationship data is stored in `spec/tracking/relationships.json`:
 ```json
 {
   "characters": {
-    "主角": {
-      "盟友": ["角色A", "角色B"],
-      "敌对": ["角色C"],
-      "爱慕": ["角色D"],
-      "未知": ["角色E"]
+    "Protagonist": {
+      "Allies": ["CharacterA", "CharacterB"],
+      "Enemies": ["CharacterC"],
+      "Love Interest": ["CharacterD"],
+      "Unknown": ["CharacterE"]
     }
   },
   "factions": {
-    "改革派": ["主角", "角色A"],
-    "保守派": ["角色C", "角色F"]
+    "Reformists": ["Protagonist", "CharacterA"],
+    "Conservatives": ["CharacterC", "CharacterF"]
   }
 }
 ```
 
-## 输出示例
+## Output Example
 
 ```
-👥 角色关系网络
+👥 Character Relationship Network
 ━━━━━━━━━━━━━━━━━━━━
-主角：李中庸
-├─ 💕 爱慕：沈玉卿
-├─ 🤝 盟友：张居正（隐藏）
-├─ 📚 导师：利玛窦
-├─ ⚔️ 敌对：申时行派系
-└─ 👁️ 监视：东厂
+Protagonist: Li Zhongyong
+├─ 💕 Love Interest: Shen Yuqing
+├─ 🤝 Ally: Zhang Juzheng (Hidden)
+├─ 📚 Mentor: Matteo Ricci
+├─ ⚔️ Enemy: Shen Shixing Faction
+└─ 👁️ Surveillance: Eastern Depot
 
-派系对立：
-改革派 ←→ 保守派
-东林党 ←→ 阉党
+Faction Opposition:
+Reformists ←→ Conservatives
+Donglin Party ←→ Eunuch Party
 
-最近变化（第60章）：
-- 沈玉卿：陌生人 → 相互吸引
-- 张居正：未知 → 师承关系
+Recent Changes (Chapter 60):
+- Shen Yuqing: Stranger → Mutual Attraction
+- Zhang Juzheng: Unknown → Master-Apprentice Relationship
 ```

@@ -1,6 +1,6 @@
 ---
-description: 基于故事规格制定技术实现方案
-argument-hint: [技术偏好和选择]
+description: Formulate technical implementation plan based on story specifications
+argument-hint: [technical preferences and choices]
 allowed-tools: Read(//stories/**/specification.md), Read(stories/**/specification.md), Read(//stories/**/creative-plan.md), Read(stories/**/creative-plan.md), Read(//plugins/**), Read(plugins/**), Write(//stories/**/creative-plan.md), Write(stories/**/creative-plan.md), Read(//memory/constitution.md), Read(memory/constitution.md), Bash(find:*), Bash(grep:*), Bash(*)
 model: claude-sonnet-4-5-20250929
 scripts:
@@ -8,401 +8,401 @@ scripts:
   ps: .specify/scripts/powershell/plan-story.ps1
 ---
 
-用户输入：$ARGUMENTS
+User Input: $ARGUMENTS
 
-## 目标
+## Goal
 
-将"要创造什么"（规格）转化为"如何创造"（计划）。这是从需求到实现的关键转换。
+Translate "What to create" (Specification) into "How to create" (Plan). This is the key transformation from requirements to implementation.
 
-## 执行步骤
+## Execution Steps
 
-### 1. 加载前置文档
+### 1. Load Prerequisite Documents
 
-运行 `{SCRIPT}` 检查并加载：
-- 宪法文件：`memory/constitution.md`
-- 规格文件：`stories/*/specification.md`
-- 澄清记录（如果已运行 `/clarify`）
+Run `{SCRIPT}` to check and load:
+- Constitution file: `memory/constitution.md`
+- Specification file: `stories/*/specification.md`
+- Clarification log (if `/clarify` has been run)
 
 <!-- PLUGIN_HOOK: genre-knowledge-plan -->
-<!-- 插件增强区：知识搜索
-     如果你安装了 genre-knowledge 插件，请在此处插入知识搜索增强提示词
-     参考：plugins/genre-knowledge/README.md 的"2.2 增强 /plan 命令"章节
+<!-- Plugin Enhancement Area: Knowledge Search
+     If you installed genre-knowledge plugin, insert knowledge search enhancement prompts here
+     Ref: "2.2 Enhance /plan command" in plugins/genre-knowledge/README.md
 -->
 
-**🆕 条件加载：黄金开篇法则**：
+**🆕 Conditional Load: Golden Opening Rules**:
 
-**判断条件**：
-1. 检查 specification.md 中的"目标字数"或"总章数"
-2. 检查当前是否在规划开篇阶段
-3. 判断依据：
-   - 如果总字数 < 10000字，或
-   - 如果规划的章节范围包含第1-3章
+**Conditions**:
+1. Check "Target Word Count" or "Total Chapters" in specification.md
+2. Check if currently in opening planning stage
+3. Basis:
+   - If total word count < 10,000 words, or
+   - If planned chapter range includes Chapters 1-3
 
-**如果满足开篇条件，执行以下操作**：
+**If opening condition met, execute the following**:
 
 ```bash
-# 检查是否存在黄金开篇法则文件
+# Check if golden opening rules file exists
 test -f spec/presets/golden-opening.md && echo "found" || echo "not-found"
 ```
 
-- ✅ **如果存在**：读取 `spec/presets/golden-opening.md`
-  - 在规划第1-3章时自动应用五大黄金法则
-  - 在后续"章节架构设计"部分特别标注前三章规划
+- ✅ **If exists**: Read `spec/presets/golden-opening.md`
+  - Automatically apply five golden rules when planning Chapters 1-3
+  - Specially mark first three chapters planning in subsequent "Chapter Architecture Design" section
 
-- ⚠️ **如果不存在**：继续正常规划（不影响流程）
+- ⚠️ **If not exists**: Continue normal planning (does not affect flow)
 
-**🆕 条件加载：节奏配置**：
+**🆕 Conditional Load: Pacing Configuration**:
 
-如果用户使用了 `/book-internalize` 命令分析对标作品：
+If user used `/book-internalize` command to analyze benchmark work:
 
 ```bash
-# 检查是否存在节奏配置文件
+# Check if rhythm configuration file exists
 test -f spec/presets/rhythm-config.json && echo "found" || echo "not-found"
 ```
 
-- ✅ **如果存在**：读取 `spec/presets/rhythm-config.json`
-  - 应用对标作品的节奏模式（章节字数、爽点间隔等）
-  - 应用内容比例建议（对话/动作/描写/心理）
-  - 在"2.2 章节架构设计"中引用这些数据
+- ✅ **If exists**: Read `spec/presets/rhythm-config.json`
+  - Apply benchmark work's pacing patterns (chapter word count, satisfaction point interval, etc.)
+  - Apply content ratio suggestions (dialogue/action/description/inner thought)
+  - Cite these data in "2.2 Chapter Architecture Design"
 
-- ⚠️ **如果不存在**：使用默认节奏规划
+- ⚠️ **If not exists**: Use default pacing planning
 
-**验证规格澄清状态**：
-- 如果存在未澄清的关键决策，提示先运行 `/clarify`
-- 或接受用户明确指示跳过
+**Verify Specification Clarification Status**:
+- If there are unclarified key decisions, prompt to run `/clarify` first
+- Or accept user's explicit instruction to skip
 
-### 2. 制定创作计划
+### 2. Formulate Creative Plan
 
-创建 `stories/*/creative-plan.md`，包含以下内容：
+Create `stories/*/creative-plan.md`, containing the following:
 
-#### 2.1 写作方法选择
+#### 2.1 Writing Method Selection
 
-基于规格分析和故事类型，选择最适合的写作方法：
-- **三幕结构**：适合线性叙事、明确起承转合
-- **英雄之旅**：适合成长型、冒险类故事
-- **七点结构**：适合悬念、反转类故事
-- **故事圈**：适合角色驱动、心理深度
-- **混合方法**：主线+支线使用不同方法
-- **类型专用结构**：如爽文的"爽点分布结构"、悬疑的"线索布局结构"等（参考类型知识库）
+Based on specification analysis and story genre, select the most suitable writing method:
+- **Three-Act Structure**: Suitable for linear narrative, clear beginning, middle, and end
+- **Hero's Journey**: Suitable for growth-type, adventure stories
+- **Seven-Point Structure**: Suitable for suspense, twist stories
+- **Story Circle**: Suitable for character-driven, psychological depth
+- **Hybrid Method**: Different methods for main line and sub-lines
+- **Genre-Specific Structure**: e.g., "Satisfaction Point Distribution Structure" for page-turners, "Clue Layout Structure" for mystery (refer to genre knowledge base)
 
-记录选择理由和应用方式。
+Record selection reason and application method.
 
-#### 2.2 章节架构设计
+#### 2.2 Chapter Architecture Design
 
 ```markdown
-## 章节架构
+## Chapter Architecture
 
-### 总体规划
-- 总章数：[基于目标字数和章节长度]
-- 章节长度：[基于节奏配置或默认2000-3000字/章]
-- 分卷安排：[如适用]
+### Overall Planning
+- Total Chapters: [Based on target word count and chapter length]
+- Chapter Length: [Based on pacing config or default 2000-3000 words/chapter]
+- Volume Arrangement: [If applicable]
 
-**🆕 节奏参数（如有rhythm-config.json）**：
-- 平均章节字数：[从配置读取，如3200字]
-- 小高潮间隔：[从配置读取，如5章]
-- 大高潮间隔：[从配置读取，如30章]
-- 节奏风格：[快/适中/慢]
-- 内容比例：对话[X]% / 动作[X]% / 描写[X]% / 心理[X]%
+**🆕 Pacing Parameters (if rhythm-config.json exists)**:
+- Average Chapter Word Count: [Read from config, e.g., 3200 words]
+- Small Climax Interval: [Read from config, e.g., 5 chapters]
+- Big Climax Interval: [Read from config, e.g., 30 chapters]
+- Pacing Style: [Fast/Moderate/Slow]
+- Content Ratio: Dialogue[X]% / Action[X]% / Description[X]% / Inner[X]%
 
-### 🌟 黄金开篇规划（如果包含第1-3章）
+### 🌟 Golden Opening Planning (If includes Chapters 1-3)
 
-**重要**：如果本次规划包含第1-3章，必须特别注意以下要点（基于 golden-opening.md）：
+**Important**: If this planning includes Chapters 1-3, must pay special attention to the following points (based on golden-opening.md):
 
-#### 第一章规划
-- ✅ **法则1-动态场景切入**：
-  - 禁止：静止场景、大段环境描写
-  - 必须：从冲突/动作/对话直接切入
-  - 具体设计：[描述第一章的开场方式]
+#### Chapter 1 Planning
+- ✅ **Rule 1 - Dynamic Scene Entry**:
+  - Prohibit: Static scenes, long environmental descriptions
+  - Must: Enter directly from conflict/action/dialogue
+  - Specific Design: [Describe Chapter 1 opening mode]
 
-- ✅ **法则2-核心冲突前置**：
-  - 第一章内必须抛出主角核心冲突
-  - 具体设计：[描述核心冲突如何呈现]
+- ✅ **Rule 2 - Core Conflict Front-loading**:
+  - Must throw out protagonist core conflict within Chapter 1
+  - Specific Design: [Describe how core conflict is presented]
 
-- ✅ **法则3-避免信息轰炸**：
-  - 绝对禁止开篇大篇幅介绍世界观
-  - 采用"滴灌式"信息透露
-  - 具体设计：[列出第一章透露的信息点]
+- ✅ **Rule 3 - Avoid Information Bombardment**:
+  - Absolutely prohibit large-scale world view introduction at the beginning
+  - Adopt "Drip Irrigation" information revelation
+  - Specific Design: [List information points revealed in Chapter 1]
 
-- ✅ **法则4-限制出场人数**：
-  - 有名有姓角色不超过3人
-  - 具体设计：[列出第一章出场角色]
+- ✅ **Rule 4 - Limit Number of Appearances**:
+  - Named characters not exceed 3
+  - Specific Design: [List characters appearing in Chapter 1]
 
-#### 第二-三章规划
-- ✅ **法则5-快速展现金手指**：
-  - 第二或第三章内展现"金手指"作用
-  - 具体设计：[描述金手指展现方式]
+#### Chapter 2-3 Planning
+- ✅ **Rule 5 - Rapid Golden Finger Display**:
+  - Display "Golden Finger" effect within Chapter 2 or 3
+  - Specific Design: [Describe Golden Finger display mode]
 
-#### 开篇节奏要求
-- 第一章目标：钩住读者，建立期待
-- 第二章目标：展现能力，强化钩子
-- 第三章目标：初步爽点，确认追读
+#### Opening Pacing Requirements
+- Chapter 1 Goal: Hook reader, establish expectation
+- Chapter 2 Goal: Show ability, reinforce hook
+- Chapter 3 Goal: Initial satisfaction point, confirm follow-up reading
 
-### 情绪曲线设计 ⭐（构建阅读体验的情绪闭环）
+### Emotional Curve Design ⭐ (Building Emotional Loop of Reading Experience)
 
-**核心理念**：好的小说不仅是故事的旅程，更是**情绪的旅程**。读者追读的本质是追逐情绪的起伏和满足。
+**Core Philosophy**: A good novel is not only a journey of story, but also a **journey of emotion**. The essence of reader follow-up is chasing emotional ups and downs and satisfaction.
 
-**情绪类型定义**（使用小说术语）：
+**Emotional Type Definition** (Using novel terminology):
 
-| 情绪类型 | 定义 | 读者体验 | 典型场景 |
+| Emotion Type | Definition | Reader Experience | Typical Scene |
 |---------|------|---------|---------|
-| 😤 **爽点** | 主角获胜、反转、展现实力 | 畅快、解气、期待下一次 | 打脸、逆袭、装逼成功 |
-| 😭 **虐点** | 主角失败、压抑、挫折 | 担忧、憋屈、期待翻盘 | 被欺负、失败、失去重要的人 |
-| 🤔 **悬念** | 未知、疑问、伏笔 | 好奇、猜测、想继续看 | 出现神秘人物、发现线索、留下谜题 |
-| 💧 **平缓** | 日常、过渡、铺垫 | 缓冲、理解、准备情绪 | 日常生活、角色互动、世界观展示 |
+| 😤 **Satisfaction** | Protagonist wins, twists, shows strength | Carefree, relieved, expect next time | Face slapping, counterattack, successful show-off |
+| 😭 **Angst** | Protagonist fails, suppressed, frustrated | Worried, aggrieved, expect turnaround | Bullied, failed, lose important person |
+| 🤔 **Suspense** | Unknown, question, foreshadowing | Curious, guessing, want to continue | Mysterious figure appears, clue discovered, puzzle left |
+| 💧 **Flat** | Daily, transition, paving | Buffer, understand, prepare emotion | Daily life, character interaction, world view display |
 
-**情绪设计原则**：
-1. ✅ **欲扬先抑**：爽点前适度铺垫虐点，爽感更强
-2. ✅ **张弛有度**：避免连续虐点或连续爽点，保持节奏
-3. ✅ **悬念驱动**：每章结尾留悬念，驱动追读欲
-4. ✅ **情绪递进**：高潮处的情绪强度要明显高于开篇
+**Emotional Design Principles**:
+1. ✅ **Suppress before Rising**: Moderate angst paving before satisfaction point makes satisfaction stronger
+2. ✅ **Balance Tension**: Avoid continuous angst or continuous satisfaction, maintain rhythm
+3. ✅ **Suspense Driven**: Leave suspense at end of each chapter to drive follow-up
+4. ✅ **Emotional Progression**: Emotional intensity at climax should be significantly higher than opening
 
-**章节段情绪规划**：
+**Chapter Segment Emotional Planning**:
 
-| 章节段 | 情绪类型 | 强度 | 目标效果 | 关键场景 |
+| Chapter Segment | Emotion Type | Intensity | Goal Effect | Key Scene |
 |--------|---------|------|---------|---------|
-| 第1-3章 | 虐→爽→悬念 | 中→高→中 | 开局抑扬，建立追读欲 | [具体描述] |
-| 第4-8章 | 平缓→虐→爽 | 低→中→高 | 第一波小高潮 | [具体描述] |
-| 第9-15章 | 悬念→虐→爽 | 中→高→高 | 第二波高潮，埋伏笔 | [具体描述] |
+| Ch 1-3 | Angst→Satisfaction→Suspense | Med→High→Med | Opening suppression/rise, establish follow-up desire | [Specific Description] |
+| Ch 4-8 | Flat→Angst→Satisfaction | Low→Med→High | First small climax | [Specific Description] |
+| Ch 9-15 | Suspense→Angst→Satisfaction | Med→High→High | Second climax, bury foreshadowing | [Specific Description] |
 | ... | ... | ... | ... | ... |
 
-**情绪强度等级**：
-- **低**：情绪波动小，主要是铺垫和过渡
-- **中**：情绪有明显起伏，读者有代入感
-- **高**：情绪爆发点，读者高度投入
-- **极高**：全书顶点，决定性高潮（通常1-3处）
+**Emotional Intensity Levels**:
+- **Low**: Small emotional fluctuation, mainly paving and transition
+- **Medium**: Obvious emotional ups and downs, reader has immersion
+- **High**: Emotional outbreak point, reader highly involved
+- **Very High**: Peak of whole book, decisive climax (usually 1-3 places)
 
-**情绪曲线可视化**（可选，ASCII简图）：
+**Emotional Curve Visualization** (Optional, ASCII simple chart):
 ```
-情绪强度
-极高 |                    ╱╲              ╱╲
-高   |         ╱╲        ╱  ╲            ╱  ╲___
-中   |    ╱╲  ╱  ╲      ╱    ╲___    ___╱
-低   | __╱  ╲╱    ╲____╱         ╲__╱
-     └─────────────────────────────────────> 章节
-        3   8   15   25   35   45   55
+Intensity
+Very High |                    ╱╲              ╱╲
+High      |         ╱╲        ╱  ╲            ╱  ╲___
+Medium    |    ╱╲  ╱  ╲      ╱    ╲___    ___╱
+Low       | __╱  ╲╱    ╲____╱         ╲__╱
+          └─────────────────────────────────────> Chapter
+             3   8   15   25   35   45   55
 ```
 
-**情绪设计自检清单**：
-- [ ] 开篇3章是否有明确的情绪钩子？
-- [ ] 是否存在连续5章以上的平缓期？（警告：容易弃读）
-- [ ] 虐点之后是否有足够的爽点回报？
-- [ ] 每个卷/阶段是否有明确的情绪高潮？
-- [ ] 全书最高情绪点是否在后1/3部分？
-- [ ] 章节结尾是否留有悬念驱动下一章？
+**Emotional Design Self-Checklist**:
+- [ ] Does opening 3 chapters have clear emotional hooks?
+- [ ] Is there a flat period of more than 5 continuous chapters? (Warning: Easy to drop)
+- [ ] Is there enough satisfaction return after angst points?
+- [ ] Does each volume/stage have a clear emotional climax?
+- [ ] Is the highest emotional point of the whole book in the last 1/3 part?
+- [ ] Does chapter end leave suspense to drive next chapter?
 
-**与节奏配置的关系**：
-- 如果存在 `rhythm-config.json`，参考其中的"爽点间隔"参数
-- 对标作品的情绪节奏可作为参考，但需根据自己的故事调整
-- 不同类型有不同的情绪节奏（爽文：高频爽点；悬疑：高频悬念；虐文：后期高爽）
+**Relationship with Pacing Configuration**:
+- If `rhythm-config.json` exists, refer to "Satisfaction Interval" parameter
+- Benchmark work's emotional rhythm can be used as reference, but adjust according to own story
+- Different genres have different emotional rhythms (Page-turner: High freq satisfaction; Mystery: High freq suspense; Angst: Late high satisfaction)
 
-### 结构映射
-[根据选定方法，映射关键节点到具体章节]
+### Structure Mapping
+[Map key nodes to specific chapters based on selected method]
 
-### 线索分布规划
+### Clue Distribution Planning
 
-**重要**：从specification.md第五章读取线索管理规格，在每个卷/章节段标注活跃线索。
+**Important**: Read clue management specifications from specification.md Chapter 5, mark active clues in each volume/chapter segment.
 
-#### 第一卷：[卷名](章节范围)
+#### Volume 1: [Volume Name](Chapter Range)
 
-| 章节段 | 内容 | 关键事件 | **活跃线索** | **交汇点** |
+| Chapter Segment | Content | Key Events | **Active Clues** | **Intersection** |
 |--------|------|---------|-------------|-----------|
-| [X-Y章] | [段落内容] | [关键事件列表] | PL-01⭐⭐⭐、PL-02⭐⭐ | X-001(第X章) |
-| [X-Y章] | [段落内容] | [关键事件列表] | PL-01⭐⭐、PL-03⭐⭐⭐ | 无 |
+| [Ch X-Y] | [Segment Content] | [Key Event List] | PL-01⭐⭐⭐, PL-02⭐⭐ | X-001(Ch X) |
+| [Ch X-Y] | [Segment Content] | [Key Event List] | PL-01⭐⭐, PL-03⭐⭐⭐ | None |
 
-**线索标注说明**：
-- PL-XX：线索ID，来自specification.md 5.1节
-- ⭐⭐⭐ 主推进：本章节段重点推进此线索，占据主要篇幅
-- ⭐⭐ 辅助：正常推进，有一定篇幅
-- ⭐ 背景：偶尔提及，保持存在感
-- X-XXX：交汇点ID，来自specification.md 5.3节
+**Clue Marking Description**:
+- PL-XX: Clue ID, from specification.md Section 5.1
+- ⭐⭐⭐ Main Push: This chapter segment focuses on pushing this clue, occupying main space
+- ⭐⭐ Auxiliary: Normal push, some space
+- ⭐ Background: Occasionally mentioned, maintain presence
+- X-XXX: Intersection ID, from specification.md Section 5.3
 
-#### 第二卷：[卷名](章节范围)
+#### Volume 2: [Volume Name](Chapter Range)
 
-[重复上述表格结构]
+[Repeat above table structure]
 
-### 节奏设计
-- 开篇钩子：第[X]章
-- 第一个高潮：第[X]章
-- 中点转折：第[X]章
-- 最大危机：第[X]章
-- 最终高潮：第[X]章
+### Pacing Design
+- Opening Hook: Chapter [X]
+- First Climax: Chapter [X]
+- Midpoint Twist: Chapter [X]
+- Biggest Crisis: Chapter [X]
+- Final Climax: Chapter [X]
 ```
 
-#### 2.3 人物体系设计
+#### 2.3 Character System Design
 
 ```markdown
-## 人物体系
+## Character System
 
-### 主角设计
-- 初始状态：[起点]
-- 成长弧线：[变化轨迹]
-- 核心冲突：[内在vs外在]
-- 关键转变点：[具体章节]
+### Protagonist Design
+- Initial State: [Starting Point]
+- Growth Arc: [Change Trajectory]
+- Core Conflict: [Internal vs External]
+- Key Transformation Point: [Specific Chapter]
 
-### 配角功能
-[每个重要配角的功能定位和出场计划]
+### Supporting Role Function
+[Function positioning and appearance plan for each important supporting role]
 
-### 关系网络
-[人物关系图和演变计划]
+### Relationship Network
+[Character relationship map and evolution plan]
 ```
 
-#### 2.4 世界观构建
+#### 2.4 World Building
 
 ```markdown
-## 世界观体系
+## World System
 
-### 核心设定
-- 世界规则：[物理/魔法/科技规则]
-- 社会结构：[政治/经济/文化]
-- 历史背景：[重要历史事件]
+### Core Settings
+- World Rules: [Physics/Magic/Tech Rules]
+- Social Structure: [Politics/Economy/Culture]
+- Historical Background: [Important Historical Events]
 
-### 设定展开计划
-- 第一层（开篇）：[基础设定]
-- 第二层（发展）：[深入设定]
-- 第三层（高潮）：[核心秘密]
+### Setting Unfolding Plan
+- Layer 1 (Opening): [Basic Settings]
+- Layer 2 (Development): [Deep Settings]
+- Layer 3 (Climax): [Core Secret]
 ```
 
-#### 2.5 情节技术设计
+#### 2.5 Plot Technology Design
 
 ```markdown
-## 情节技术
+## Plot Technology
 
-### 冲突升级路径
-1. 初级冲突：[个人层面]
-2. 中级冲突：[团体层面]
-3. 高级冲突：[世界层面]
+### Conflict Escalation Path
+1. Primary Conflict: [Personal Level]
+2. Intermediate Conflict: [Group Level]
+3. Advanced Conflict: [World Level]
 
-### 悬念设置
-- 主悬念：[贯穿全文]
-- 章节悬念：[每章钩子]
-- 支线悬念：[丰富层次]
+### Suspense Setup
+- Main Suspense: [Running through whole text]
+- Chapter Suspense: [Hook for each chapter]
+- Sub-line Suspense: [Rich layers]
 
-### 伏笔布局
-[伏笔清单和回收计划]
+### Foreshadowing Layout
+[Foreshadowing list and recovery plan]
 ```
 
-#### 2.6 叙事技术选择
+#### 2.6 Narrative Technology Selection
 
 ```markdown
-## 叙事技术
+## Narrative Technology
 
-### POV设计
-- 视角类型：[第一/第三人称]
-- 视角限制：[全知/限定]
-- 多视角安排：[如适用]
+### POV Design
+- Perspective Type: [First/Third Person]
+- Perspective Limitation: [Omniscient/Limited]
+- Multi-perspective Arrangement: [If applicable]
 
-### 时间线设计
-- 主线时间：[线性/非线性]
-- 回忆穿插：[使用策略]
-- 平行叙事：[如适用]
+### Timeline Design
+- Main Line Time: [Linear/Non-linear]
+- Flashback Interweaving: [Usage Strategy]
+- Parallel Narrative: [If applicable]
 
-### 叙事节奏
-- 快节奏段落：[动作/冲突]
-- 慢节奏段落：[情感/描写]
-- 节奏变化：[张弛规律]
+### Narrative Pacing
+- Fast Paced Segments: [Action/Conflict]
+- Slow Paced Segments: [Emotion/Description]
+- Pacing Change: [Tension Regulation]
 ```
 
-### 3. 技术决策记录
+### 3. Technical Decision Record
 
-记录所有重要的技术决策：
-- **决策**：选择了什么
-- **理由**：为什么选择
-- **风险**：可能的问题
-- **备案**：替代方案
+Record all important technical decisions:
+- **Decision**: What was chosen
+- **Reason**: Why it was chosen
+- **Risk**: Possible issues
+- **Backup**: Alternative plan
 
-### 4. 质量保证计划
+### 4. Quality Assurance Plan
 
 ```markdown
-## 质量保证
+## Quality Assurance
 
-### 自检清单
-- [ ] 逻辑一致性检查点
-- [ ] 人物行为合理性
-- [ ] 世界观自洽性
-- [ ] 节奏流畅性
+### Self-Checklist
+- [ ] Logic consistency checkpoints
+- [ ] Character behavior reasonableness
+- [ ] World view self-consistency
+- [ ] Pacing fluency
 
-### 验证节点
-- 每5章：小循环验证
-- 每卷：大循环验证
-- 完稿：全面验证
+### Verification Nodes
+- Every 5 chapters: Small cycle verification
+- Every volume: Large cycle verification
+- Draft completion: Comprehensive verification
 ```
 
-### 5. 风险管理
+### 5. Risk Management
 
-识别并制定应对策略：
-- **创作风险**：灵感、逻辑、节奏
-- **技术风险**：复杂度、一致性
-- **时间风险**：进度、质量平衡
+Identify and formulate response strategies:
+- **Creative Risk**: Inspiration, logic, pacing
+- **Technical Risk**: Complexity, consistency
+- **Time Risk**: Progress, quality balance
 
-### 6. 输出和验证
+### 6. Output and Verification
 
-- 保存计划到 `stories/*/creative-plan.md`
-- 验证计划符合宪法原则
-- 验证计划满足规格需求
-- 提示下一步：运行 `/tasks` 生成任务
+- Save plan to `stories/*/creative-plan.md`
+- Verify plan complies with Constitution principles
+- Verify plan meets Specification requirements
+- Prompt next step: Run `/tasks` to generate tasks
 
-## 与其他命令的关系
+## Relationship with Other Commands
 
-- **输入**：来自 `/specify` 的规格 + `/clarify` 的澄清
-- **输出**：为 `/tasks` 提供任务生成依据
-- **验证**：被 `/analyze` 用于检查实现符合度
+- **Input**: Specification from `/specify` + Clarification from `/clarify`
+- **Output**: Provide task generation basis for `/tasks`
+- **Verification**: Used by `/analyze` to check implementation compliance
 
-## 注意事项
+## Notes
 
-### 🌟 黄金开篇法则的应用（重要）
+### 🌟 Application of Golden Opening Rules (Important)
 
-**何时应用**：
-- 规划包含第1-3章时自动触发
-- 或总字数 < 10000字的短篇作品
+**When to Apply**:
+- Automatically triggered when planning includes Chapters 1-3
+- Or short works with total word count < 10,000 words
 
-**为什么重要**：
-- 前三章决定了80%的读者留存率
-- 开篇是读者决定是否追读的关键窗口
-- 黄金开篇法则经过大量爆款作品验证
+**Why Important**:
+- First three chapters determine 80% of reader retention rate
+- Opening is key window for readers to decide whether to follow
+- Golden Opening Rules verified by large number of hit works
 
-**如何应用**：
-1. 在"章节架构设计"中创建独立的"黄金开篇规划"部分
-2. 逐条检查五大法则是否在前三章中体现
-3. 具体设计每一章如何满足法则要求
-4. 如果规格与法则冲突，优先遵循法则（或有意识地违反）
+**How to Apply**:
+1. Create independent "Golden Opening Planning" section in "Chapter Architecture Design"
+2. Check one by one if five major rules are reflected in first three chapters
+3. Specifically design how each chapter meets rule requirements
+4. If specification conflicts with rules, prioritize rules (or consciously violate)
 
-**常见误区**：
-- ❌ 第一章大段描写世界观设定
-- ❌ 主角在第一章只是日常生活，没有冲突
-- ❌ 第一章出场角色过多（>3人）
-- ❌ 金手指/核心能力延迟到第五章以后才展现
+**Common Mistakes**:
+- ❌ Chapter 1 describes world view settings in large paragraphs
+- ❌ Protagonist only has daily life in Chapter 1, no conflict
+- ❌ Too many characters appearing in Chapter 1 (>3 people)
+- ❌ Golden Finger/Core Ability delayed until after Chapter 5 to show
 
-### 🎵 节奏配置的应用
+### 🎵 Application of Pacing Configuration
 
-**如果使用了 `/book-internalize`**：
-- 系统会自动读取 `spec/presets/rhythm-config.json`
-- 应用对标作品的节奏参数（章节字数、爽点间隔等）
-- 应用内容比例（对话/动作/描写/心理）
+**If used `/book-internalize`**:
+- System automatically reads `spec/presets/rhythm-config.json`
+- Apply benchmark work's pacing parameters (chapter word count, satisfaction interval, etc.)
+- Apply content ratio (dialogue/action/description/inner thought)
 
-**参数优先级**：
-1. **用户即时指令**（最高）
-2. **rhythm-config.json**（对标作品节奏）
-3. **类型知识库**（类型通用节奏）
-4. **默认值**（2000-3000字/章）
+**Parameter Priority**:
+1. **User Immediate Instruction** (Highest)
+2. **rhythm-config.json** (Benchmark work pacing)
+3. **Genre Knowledge Base** (Genre general pacing)
+4. **Default Value** (2000-3000 words/chapter)
 
-**建议**：
-- 对标作品的节奏参数仅供参考
-- 根据自己的创作习惯适度调整
-- 不要生搬硬套，保持灵活性
+**Suggestions**:
+- Benchmark work's pacing parameters are for reference only
+- Adjust moderately according to own creative habits
+- Do not apply mechanically, maintain flexibility
 
-### 技术服务于故事
-- 所有技术选择都要服务于故事表达
-- 不要为了技巧而技巧
-- 保持方案的灵活性
+### Technology Serves Story
+- All technical choices must serve story expression
+- Do not use technique for technique's sake
+- Keep plan flexible
 
-### 可执行性
-- 计划要具体可执行
-- 避免过于理想化
-- 考虑实际创作能力
+### Executability
+- Plan must be specifically executable
+- Avoid being too idealistic
+- Consider actual creative ability
 
-### 迭代优化
-- 计划可以根据实践调整
-- 记录调整原因和影响
-- 保持版本追踪
+### Iterative Optimization
+- Plan can be adjusted based on practice
+- Record adjustment reasons and impact
+- Maintain version tracking
 
-记住：**好的计划是成功的一半，但要随时准备调整。黄金开篇是硬规则，其他规划可以灵活。**
+Remember: **A good plan is half the success, but be ready to adjust at any time. Golden Opening is a hard rule, other planning can be flexible.**
