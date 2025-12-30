@@ -1,5 +1,5 @@
 ---
-description: 专家模式 - 获取专业写作指导
+description: Expert Mode - Get professional writing guidance
 argument-hint: [plot | character | world | style]
 allowed-tools: Read(//.specify/experts/**), Read(.specify/experts/**), Read(//plugins/**/experts/**), Read(plugins/**/experts/**), Bash(find:*), Bash(ls:*), Bash(*)
 model: claude-sonnet-4-5-20250929
@@ -8,99 +8,99 @@ scripts:
   ps: Write-Output ""
 ---
 
-# 专家模式
+# Expert Mode
 
-根据用户输入执行相应操作：
+Execute actions based on user input:
 
-## 1. 列出可用专家（无参数时）
+## 1. List Available Experts (No Arguments)
 
-如果用户输入 `/expert` 不带参数，显示所有可用专家：
+If user inputs `/expert` without arguments, display all available experts:
 
-### 核心专家
-- **plot** - 剧情结构专家
-  - 精通三幕、英雄之旅、故事圈等叙事结构
-  - 分析情节问题、优化节奏、设计冲突升级
+### Core Experts
+- **plot** - Plot Structure Expert
+  - Mastering narrative structures like Three Acts, Hero's Journey, Story Circle
+  - Analyzing plot issues, optimizing pacing, designing conflict escalation
 
-- **character** - 人物塑造专家
-  - 人物弧光设计、动机分析、性格塑造
-  - 对话优化、声音区分、关系构建
+- **character** - Character Shaping Expert
+  - Character arc design, motivation analysis, personality shaping
+  - Dialogue optimization, voice differentiation, relationship building
 
-- **world** - 世界观设计专家
-  - 世界观构建、设定一致性、文化背景
-  - 规则体系、历史脉络、地理环境
+- **world** - World Building Expert
+  - World construction, setting consistency, cultural background
+  - Rule systems, historical context, geographical environment
 
-- **style** - 文风语言专家
-  - 叙述技巧、修辞手法、语言风格
-  - 文风统一、氛围营造、节奏把控
+- **style** - Writing Style Expert
+  - Narrative techniques, rhetorical devices, language style
+  - Style unification, atmosphere creation, pacing control
 
-### 插件专家
-扫描 `plugins/` 目录，如果存在带有专家配置的插件，列出：
-- 检查每个插件目录下的 `config.yaml`
-- 如果包含 `experts` 字段，显示专家信息
+### Plugin Experts
+Scan `plugins/` directory, if plugins with expert configuration exist, list them:
+- Check `config.yaml` in each plugin directory
+- If `experts` field is present, display expert info
 
-使用示例：`/expert plot` 激活剧情结构专家
+Usage Example: `/expert plot` activates Plot Structure Expert
 
-## 2. 激活专家模式
+## 2. Activate Expert Mode
 
-用户输入：`/expert <type>` （如 `/expert plot`）
+User Input: `/expert <type>` (e.g., `/expert plot`)
 
-### 执行步骤：
-1. **确认专家类型**
-   - 核心专家：读取 `.specify/experts/core/<type>.md`
-   - 插件专家：读取对应插件的专家文件
+### Execution Steps:
+1. **Confirm Expert Type**
+   - Core Expert: Read `.specify/experts/core/<type>.md`
+   - Plugin Expert: Read expert file of corresponding plugin
 
-2. **加载专家配置**
-   读取专家定义文件，获取：
-   - 身份定位
-   - 专业领域
-   - 工作方式
-   - 分析框架
+2. **Load Expert Configuration**
+   Read expert definition file, get:
+   - Identity positioning
+   - Professional field
+   - Way of working
+   - Analysis framework
 
-3. **进入专家模式**
+3. **Enter Expert Mode**
    ```
-   ✨ 已激活【<专家名称>】模式
+   ✨ Activated [Expert Name] Mode
 
-   [显示专家的自我介绍]
+   [Display Expert's Self Introduction]
 
-   我现在会从专业角度为您提供 <领域> 方面的深度指导。
-   有什么可以帮助您的吗？
+   I will now provide deep guidance on <field> from a professional perspective.
+   How can I help you?
    ```
 
-4. **模式特征**
-   - 保持专家视角和专业术语
-   - 提供深度分析而非快速答案
-   - 引用相关理论和方法论
-   - 主动提出诊断性问题
+4. **Mode Features**
+   - Maintain expert perspective and professional terminology
+   - Provide in-depth analysis rather than quick answers
+   - Cite relevant theories and methodologies
+   - Proactively ask diagnostic questions
 
-## 3. 专家模式行为准则
+## 3. Expert Mode Behavioral Guidelines
 
-进入专家模式后：
-- **保持专业身份**：始终以该领域专家的视角交流
-- **深度优先**：提供详细分析而非简单建议
-- **理论支撑**：引用相关专业理论和框架
-- **主动引导**：通过提问帮助用户深入思考
-- **持续模式**：直到用户使用其他 `/` 命令才退出
+After entering Expert Mode:
+- **Maintain Professional Identity**: Always communicate from the perspective of an expert in that field
+- **Depth First**: Provide detailed analysis rather than simple suggestions
+- **Theoretical Support**: Cite relevant professional theories and frameworks
+- **Proactive Guidance**: Help users think deeply by asking questions
+- **Continuous Mode**: Exit only when user uses other `/` commands
 
-## 4. 退出专家模式
+## 4. Exit Expert Mode
 
-当用户使用任何其他 `/` 命令时：
-1. 自动退出专家模式
-2. 执行新命令
-3. 回到正常交互模式
+When user uses any other `/` command:
+1. Automatically exit Expert Mode
+2. Execute new command
+3. Return to normal interaction mode
 
-无需显式退出命令，保持使用流畅性。
+No explicit exit command needed, maintaining usage fluidity.
 
-## 5. 错误处理
+## 5. Error Handling
 
-- 如果指定的专家不存在：
+- If specified expert does not exist:
   ```
-  未找到专家类型：<type>
-  可用的专家有：plot, character, world, style
-  使用 /expert 查看所有可用专家
+  Expert type not found: <type>
+  Available experts are: plot, character, world, style
+  Use /expert to view all available experts
   ```
 
-- 如果专家文件读取失败：
+- If expert file read fails:
   ```
-  专家配置加载失败，请检查文件是否存在：
+  Expert configuration load failed, please check if file exists:
   .specify/experts/core/<type>.md
   ```
